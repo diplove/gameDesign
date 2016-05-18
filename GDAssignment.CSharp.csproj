@@ -63,6 +63,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\BlackholeGravity.cs" />
+    <Compile Include="Assets\Scripts\MoonOrbit.cs" />
     <Compile Include="Assets\Scripts\PlanetGravity.cs" />
     <Compile Include="Assets\Scripts\PrototypePlayer.cs" />
     <Compile Include="Assets\Scripts\followPlayer.cs" />
