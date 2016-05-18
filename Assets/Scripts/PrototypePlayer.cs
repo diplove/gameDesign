@@ -41,12 +41,6 @@ public class PrototypePlayer : MonoBehaviour {
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotation), turnRate * Time.deltaTime);
     }
 
-	void OnCollisionEnter2D (Collision2D coll) {
-		if (coll.gameObject.tag == "PlanetGravity") {
-
-	}
-	}
-
 	
 	void Accelerate ()
     {
