@@ -63,6 +63,9 @@ public class PrototypePlayer : MonoBehaviour {
 	void Start () {
 	rb = GetComponent<Rigidbody2D>();
         rotation = transform.rotation.eulerAngles;
+
+        maxHull = 500; // Temporary max hull value
+        curHull = maxHull; // Current is set to max at start
 	}
 
     // Update is called once per frame
