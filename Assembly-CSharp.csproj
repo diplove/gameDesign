@@ -6,7 +6,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{4731D579-0F48-8885-105A-177BECAC102F}</ProjectGuid>
+    <ProjectGuid>{54DEC9D4-1E8C-2C5F-41D4-125DCDC5D295}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -45,7 +45,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\BlackholeGravity.cs" />
+     <Compile Include="Assets\Scripts\MoonOrbit.cs" />
+     <Compile Include="Assets\Scripts\PlanetGravity.cs" />
      <Compile Include="Assets\Scripts\PrototypePlayer.cs" />
+     <Compile Include="Assets\Scripts\UIHullText.cs" />
      <Compile Include="Assets\Scripts\followPlayer.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
