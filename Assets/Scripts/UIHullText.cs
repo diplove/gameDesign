@@ -3,8 +3,9 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class UIHullText : MonoBehaviour {
-	[SerializeField]
-	private Text hullLabel; // A serialized field where you put in the object in the inspector. In this case, it is a UIText object.
+
+	public Text hullLabel; // A serialized field where you put in the object in the inspector. In this case, it is a UIText object.
+    public Text speedLabel;
 
     private GameObject player; // Variable storing the player GameObject
 
@@ -17,5 +18,6 @@ public class UIHullText : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		hullLabel.text = "Hull: " + player.GetComponent<PrototypePlayer>().curHull + "/" + player.GetComponent<PrototypePlayer>().maxHull; // Retrieving values from the script component of the player
+        speedLabel.text = "Speed: " + Mathf.Round(player.GetComponent<Rigidbody2D>().velocity.SqrMagnitude());
 	}
 }

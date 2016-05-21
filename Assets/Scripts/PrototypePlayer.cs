@@ -59,6 +59,8 @@ public class PrototypePlayer : MonoBehaviour {
 
     private Rigidbody2D rb;
 
+    private bool landed;
+
 	// Use this for initialization
 	void Start () {
 	rb = GetComponent<Rigidbody2D>();
@@ -88,7 +90,9 @@ public class PrototypePlayer : MonoBehaviour {
         {
             rotation.z -= turnAmount;
         }
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotation), turnRate * Time.deltaTime);
+        if (!landed) {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotation), turnRate * Time.deltaTime);
+        }
 
 		if (Input.GetKey("z")) {
 			if (curBatt >= primCost) {
@@ -145,21 +149,39 @@ public class PrototypePlayer : MonoBehaviour {
 		}
 
 		if (curHeat > 0) {
-			curHeat = curHeat - (heatDecreaseRate*heatDecreaseMultiplier);
+			curHeat -= (heatDecreaseRate*heatDecreaseMultiplier);
 		}
+    }
+
+    // Method called for dealing damage to vessel
+    public void HitDamage(int damage) {
+       // Debug.Log("Hit For: " + damage);
+        if (curShield > 0) {
+            if (curShield - damage <= 0) {
+                curShield = 0;
+                curHull -= damage;
+            } else {
+                curShield -= damage;
+            }
+        } else {
+            curHull -= damage;
+        }
     }
 
 	
 	void Accelerate ()
     {
+        if (landed) {
+            breakFixedLock();
+        }
         rb.AddForce(transform.up * accelerationRate);
         enforceSpeedLimit();
     }
 
     void Reverse()
-    {
-        rb.AddForce(transform.up * -decelerationRate);
-        enforceSpeedLimit();
+    {        
+            rb.AddForce(transform.up * -decelerationRate);
+            enforceSpeedLimit();        
     }
 
 	void FirePrimary() {
@@ -171,12 +193,7 @@ public class PrototypePlayer : MonoBehaviour {
 	}
 
 	void ToggleSupport() {
-		if (suppActive == false) {
-			suppActive = true;
-		} 
-		else {
-			suppActive = false;
-		}
+        suppActive = !suppActive;
 	}
 
     void enforceSpeedLimit()
@@ -186,5 +203,19 @@ public class PrototypePlayer : MonoBehaviour {
         rb.velocity = rb.velocity.y < -maxVelocity ? new Vector2(rb.velocity.x, -maxVelocity) : rb.velocity;
         rb.velocity = rb.velocity.y < -maxVelocity ? new Vector2(rb.velocity.x, -maxVelocity) : rb.velocity;
     }
-	
+
+    void createFixedLock(GameObject other) {
+        gameObject.AddComponent<FixedJoint2D>();
+        transform.parent = other.transform;
+        GetComponent<FixedJoint2D>().connectedBody = other.GetComponent<Rigidbody2D>();
+        landed = true;
+    }
+
+    void breakFixedLock() {
+        rotation = transform.rotation.eulerAngles;
+        landed = false;
+        transform.parent = null;
+        Destroy(GetComponent<FixedJoint2D>());
+    }
+
 }

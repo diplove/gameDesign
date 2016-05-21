@@ -19,4 +19,17 @@ public class MoonOrbit : MonoBehaviour {
     {
         transform.RotateAround(transform.parent.transform.position, Vector3.forward, orbitSpeed * Time.deltaTime);
     }
+
+    void OnCollisionEnter2D(Collision2D other) {
+        if (other.gameObject.tag == "player") {
+            Rigidbody2D playerRb = other.gameObject.GetComponent<Rigidbody2D>();
+            if (playerRb.velocity.sqrMagnitude < 1) {
+                if (Vector3.Angle(other.transform.up, transform.position - other.transform.position) > 170) {
+                    other.gameObject.SendMessage("createFixedLock", gameObject);
+                }
+             }
+            other.gameObject.SendMessage("HitDamage", (playerRb.velocity.sqrMagnitude * playerRb.mass) * GetComponent<Rigidbody2D>().mass);
+        }
+    }
+
 }
