@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - player
+  - enemyShip
+  - planet
+  - moon
+  - star
+  - blackhole
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Background
+    uniqueID: 2147102285
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Planets
+    uniqueID: 928551013
+    locked: 0
+  - name: Structures
+    uniqueID: 487205067
+    locked: 0
+  - name: Projectiles
+    uniqueID: 3511846957
+    locked: 0
+  - name: Vessels
+    uniqueID: 1649874221
+    locked: 0
