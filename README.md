@@ -1,2 +1,0 @@
-# gameDesign
-Assignment

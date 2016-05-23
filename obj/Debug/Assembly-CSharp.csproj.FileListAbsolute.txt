@@ -1,2 +1,0 @@
-D:\Unity\Projects\ShipMovementPrototype\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
-C:\Users\Diplove\Desktop\Diplove\Autum Semester 2016\Introduction to Computer Game Design (31262)\Assignment 3\WilliamShipMovementPrototype\ShipMovementPrototype\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
