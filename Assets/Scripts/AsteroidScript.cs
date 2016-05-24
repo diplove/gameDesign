@@ -26,4 +26,25 @@ public class AsteroidScript : MonoBehaviour
     {
 
 	}
+
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.tag == "player")
+        {
+            Rigidbody2D playerRb = other.gameObject.GetComponent<Rigidbody2D>();
+            if (playerRb.velocity.sqrMagnitude < 1)
+            {
+                if (Vector3.Angle(other.transform.up, transform.position - other.transform.position) > 170)
+                {
+                    other.gameObject.SendMessage("createFixedLock", gameObject);
+                }
+
+            }
+            else if (playerRb.velocity.magnitude > 1.5)
+            {
+                other.gameObject.SendMessage("HitDamage", (playerRb.velocity.sqrMagnitude * playerRb.mass) * GetComponent<Rigidbody2D>().mass);
+            }
+        }
+
+    }
 }
