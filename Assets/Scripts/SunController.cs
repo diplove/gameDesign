@@ -18,7 +18,6 @@ public class SunController : MonoBehaviour {
     void OnTriggerEnter2D(Collider2D other) {
         if (other.tag == "player") {
             heatedObjects.Add(other.transform);
-            Debug.Log("Added player to heated objects");
         }
     }
 
@@ -26,6 +25,11 @@ public class SunController : MonoBehaviour {
         if (other.tag == "player") {
             heatedObjects.Remove(other.transform);
         }
+    }
+
+    void OnCollisionEnter2D(Collision2D other) {
+        other.gameObject.SendMessage("DestroySelf");
+        
     }
 
     void calculateDistance() {

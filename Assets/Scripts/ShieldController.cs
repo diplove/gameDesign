@@ -16,11 +16,14 @@ public class ShieldController : MonoBehaviour {
 	}
 
     public void deactivateShield() {
+        GetComponent<Animator>().enabled = false;
         shieldTrigger.enabled = false;
     }
 
     public void activateShield() {
+        GetComponent<Animator>().enabled = true;
         shieldTrigger.enabled = true;
+
     }
 
     void OnTriggerEnter2D(Collider2D other) {

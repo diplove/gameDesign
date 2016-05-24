@@ -87,6 +87,9 @@ public class PrototypePlayer : MonoBehaviour {
     // Vessel Children
     public GameObject shield; // Shield Object
 
+    // Death Effects
+    public GameObject deathExplosion;
+    
 
 	// Use this for initialization
 	void Start () {
@@ -102,6 +105,7 @@ public class PrototypePlayer : MonoBehaviour {
 	}
 
     void FixedUpdate() {
+        CheckHull();
         HeatUpkeep();
         GeneratorUpkeep();
         SupportUpkeep();
@@ -152,6 +156,25 @@ public class PrototypePlayer : MonoBehaviour {
 		}
     }
 
+    void CheckHull() {
+        if (curHull == 0) {
+            DestroySelf();
+        }
+    }
+
+    void Respawn() {
+        GetComponent<Rigidbody2D>().velocity = new Vector3(0, 0, 0);
+        curHeat = 0;
+        VisualHeatEffect();
+        curShield = maxShield;
+        shield.GetComponent<ShieldController>().activateShield();
+        curHull = maxHull;
+        curBatt = maxBatt;
+        transform.position = GameObject.Find("SpaceDock").transform.position;
+        transform.rotation = GameObject.Find("SpaceDock").transform.rotation;
+        GetComponent<Rigidbody2D>().isKinematic = false;
+    }
+
     void GeneratorUpkeep() {
         //Generator Upkeep
         if (Time.time - lastGeneratorStep > timeBetweenGeneratorSteps) {
@@ -191,9 +214,13 @@ public class PrototypePlayer : MonoBehaviour {
         //Heat Upkeep
         if (Time.time - lastHeatStep > timeBetweenHeatSteps) {
             if (curHeat > thresholdHeat) {
-                heatDamageTick += 1;
+                //heatDamageTick += 1;
+                heatDamageTick = (int)(curHeat - thresholdHeat);
                 if (heatDamageTick > heatTickThreshold) {
-                    curHull -= 1;
+                    if ((curHull -= heatDamageTick) < 0) {
+                        curHull = 0;
+                    }
+                    //curHull -= 1;
                     heatDamageTick -= heatTickThreshold;
                 }
             }
@@ -213,6 +240,12 @@ public class PrototypePlayer : MonoBehaviour {
         timeBetweenPrimSteps = primBaseSpeed / primRate;
     }
 
+    public void DestroySelf() {
+        GetComponent<Rigidbody2D>().isKinematic = true;
+        GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+        GetComponent<Animator>().Play("VesselExplode");
+    }
+
     // Method called for dealing damage to vessel
     public void HitDamage(int damage) {
         if (curShield > 0) {
@@ -224,12 +257,17 @@ public class PrototypePlayer : MonoBehaviour {
             }
             shield.GetComponent<Animator>().Play("hit");
         } else {
-            curHull -= damage;
+            if ((curHull -= damage) < 0) {
+                curHull = 0;
+            }
         }
     }
 
-    public void ApplyHeat(float heat) {
+     public void ApplyHeat(float heat) {
         curHeat += heat;
+        /*if (curHeat > thresholdHeat) {
+            curHeat = thresholdHeat;
+        }*/
         VisualHeatEffect();
     }
 
