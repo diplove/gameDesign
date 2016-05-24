@@ -29,7 +29,8 @@ public class BlackholeGravity : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag != "moon" || other.tag != "planet")
+        
+        if (other.tag != "moon" && other.tag != "planet" && other.tag != "playerChild")
         {
             if (gravityWell.IsTouching(other))
             {
@@ -40,7 +41,7 @@ public class BlackholeGravity : MonoBehaviour {
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (other.tag != "moon" || other.tag != "planet")
+        if (other.tag != "moon" && other.tag != "planet" && other.tag != "playerChild") 
         {
             if (!gravityWell.IsTouching(other))
             {

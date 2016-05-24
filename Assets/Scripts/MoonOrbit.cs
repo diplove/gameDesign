@@ -5,18 +5,17 @@ public class MoonOrbit : MonoBehaviour {
 
     public float orbitSpeed;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start() {
 
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    }
 
-    void FixedUpdate()
-    {
+    // Update is called once per frame
+    void Update() {
+
+    }
+
+    void FixedUpdate() {
         transform.RotateAround(transform.parent.transform.position, Vector3.forward, orbitSpeed * Time.deltaTime);
     }
 
@@ -27,9 +26,11 @@ public class MoonOrbit : MonoBehaviour {
                 if (Vector3.Angle(other.transform.up, transform.position - other.transform.position) > 170) {
                     other.gameObject.SendMessage("createFixedLock", gameObject);
                 }
-             }
-            other.gameObject.SendMessage("HitDamage", (playerRb.velocity.sqrMagnitude * playerRb.mass) * GetComponent<Rigidbody2D>().mass);
-        }
-    }
 
+            } else if (playerRb.velocity.magnitude > 1.5) {
+                other.gameObject.SendMessage("HitDamage", (playerRb.velocity.sqrMagnitude * playerRb.mass) * GetComponent<Rigidbody2D>().mass);
+            }
+        }
+
+    }
 }

@@ -37,7 +37,7 @@ public class PlanetGravity : MonoBehaviour {
                 if (Vector3.Angle(other.transform.up, transform.position - other.transform.position) > 170) {
                     playerRb.velocity = new Vector2(0, 0);
                 }
-            } else {
+            } else if (playerRb.velocity.magnitude > 1.5) {
                 other.gameObject.SendMessage("HitDamage", (playerRb.velocity.sqrMagnitude * playerRb.mass) * mass);
             }
 

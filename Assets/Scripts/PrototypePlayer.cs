@@ -18,13 +18,21 @@ public class PrototypePlayer : MonoBehaviour {
 	public int maxShield;
 	public int curShield;
 	public int shieldType;
+    private bool shieldActive;
+    private bool shieldRecharging;
 
-	//Generator
-	public int maxBatt;
+    private float lastShieldRechargeStep;
+    public float timeBetweenShieldRechargeSteps;
+
+    //Generator
+    public int maxBatt;
 	public int curBatt;
 	public float rechargeRate;
 	public float rechargeBuffer;
 	public int bufferAmount;
+
+    private float lastGeneratorStep;
+    public float timeBetweenGeneratorSteps;
 
 	//Heat
 	public float curHeat;
@@ -34,12 +42,22 @@ public class PrototypePlayer : MonoBehaviour {
 	public float heatDecreaseRate;
 	public int heatDecreaseMultiplier;
 
+    private float lastHeatStep;
+    public float timeBetweenHeatSteps; // In seconds
+    
+    // ######## Projectile creation and movement is handled by the projectile controller ########
+
 	//Primary Weapon
 	public int primDamage;
 	public int primType;
 	public int primRate;
+    public float primBaseSpeed;
 	public int primCost;
 	public float primHeat;
+
+    private float lastPrimStep;
+    private float timeBetweenPrimSteps;
+   
 
 	//Auxiliary Weapon
 	public int auxDamage;
@@ -54,26 +72,45 @@ public class PrototypePlayer : MonoBehaviour {
 	public int suppCost;
 	public float suppBattRechargeBlock;
 
+    private float lastSupportstep;
+    public float timeBetweenSupportSteps;
 
+    // Rotation vector
     private Vector3 rotation;
 
+    // Rigidbody reference for force manupulation
     private Rigidbody2D rb;
 
+    // Keep track of vessel to see if it has landed on a planet or moon surface
     private bool landed;
+
+    // Vessel Children
+    public GameObject shield; // Shield Object
+
 
 	// Use this for initialization
 	void Start () {
 	rb = GetComponent<Rigidbody2D>();
         rotation = transform.rotation.eulerAngles;
 
-        maxHull = 500; // Temporary max hull value
         curHull = maxHull; // Current is set to max at start
+        curShield = maxShield; // Current shield is initialised to the max value
+        curBatt = maxBatt;
+        curHeat = 0;
+
+        UpdatePrimaryWeapon();
 	}
+
+    void FixedUpdate() {
+        HeatUpkeep();
+        GeneratorUpkeep();
+        SupportUpkeep();
+    }
 
     // Update is called once per frame
     void Update()
     {
-		//Controls
+        //Controls
         if (Input.GetKey(KeyCode.UpArrow))
         {
             Accelerate();
@@ -113,49 +150,71 @@ public class PrototypePlayer : MonoBehaviour {
 		if (Input.GetKeyDown("c")) {
 			ToggleSupport ();
 		}
+    }
 
-		//Generator Upkeep
-		if (curBatt < maxBatt) {
-			if (suppActive == true) {
-				rechargeBuffer = rechargeBuffer + (rechargeRate - suppBattRechargeBlock);
-			} 
-			else {
-				rechargeBuffer += rechargeRate;
-			}
+    void GeneratorUpkeep() {
+        //Generator Upkeep
+        if (Time.time - lastGeneratorStep > timeBetweenGeneratorSteps) {
+            if (curBatt < maxBatt) {
+                if (suppActive == true) {
+                    rechargeBuffer = rechargeBuffer + (rechargeRate - suppBattRechargeBlock);
+                } else {
+                    rechargeBuffer += rechargeRate;
+                }
 
-			if (rechargeBuffer >= bufferAmount) {
-				rechargeBuffer -= bufferAmount;
-				curBatt += bufferAmount;
-			}
-		}
+                if (rechargeBuffer >= bufferAmount) {
+                    rechargeBuffer -= bufferAmount;
+                    curBatt += bufferAmount;
+                }
+            }
+            lastGeneratorStep = Time.time;
+        }
+    }
 
-		if (suppActive == false) {
-			if (curBatt > maxBatt) {
-				curBatt = maxBatt;
-			}
-		} else {
-			if (curBatt > (maxBatt - suppCost)) {
-				curBatt = maxBatt - suppCost;
-			}
-		}
+    void SupportUpkeep() {
+        // Support Upkeep
+        if (Time.time - lastSupportstep > timeBetweenSupportSteps) {
+            if (suppActive == false) {
+                if (curBatt > maxBatt) {
+                    curBatt = maxBatt;
+                }
+            } else {
+                if (curBatt > (maxBatt - suppCost)) {
+                    curBatt = maxBatt - suppCost;
+                }
+            }
+            lastSupportstep = Time.time;
+        }
+    }
 
-		//Heat Upkeep
-		if (curHeat > thresholdHeat) {
-			heatDamageTick += 1;
-			if (heatDamageTick > heatTickThreshold) {
-				curHull -= 1;
-				heatDamageTick -= heatTickThreshold;
-			}
-		}
+    void HeatUpkeep() {
+        //Heat Upkeep
+        if (Time.time - lastHeatStep > timeBetweenHeatSteps) {
+            if (curHeat > thresholdHeat) {
+                heatDamageTick += 1;
+                if (heatDamageTick > heatTickThreshold) {
+                    curHull -= 1;
+                    heatDamageTick -= heatTickThreshold;
+                }
+            }
 
-		if (curHeat > 0) {
-			curHeat -= (heatDecreaseRate*heatDecreaseMultiplier);
-		}
+            if (curHeat > 0) {
+                curHeat -= heatDecreaseRate * heatDecreaseMultiplier;
+                if (curHeat < 0) {
+                    curHeat = 0;
+                }
+                VisualHeatEffect();
+            }
+            lastHeatStep = Time.time;
+        }
+    }
+
+    void UpdatePrimaryWeapon() {
+        timeBetweenPrimSteps = primBaseSpeed / primRate;
     }
 
     // Method called for dealing damage to vessel
     public void HitDamage(int damage) {
-       // Debug.Log("Hit For: " + damage);
         if (curShield > 0) {
             if (curShield - damage <= 0) {
                 curShield = 0;
@@ -163,12 +222,23 @@ public class PrototypePlayer : MonoBehaviour {
             } else {
                 curShield -= damage;
             }
+            shield.GetComponent<Animator>().Play("hit");
         } else {
             curHull -= damage;
         }
     }
 
-	
+    public void ApplyHeat(float heat) {
+        curHeat += heat;
+        VisualHeatEffect();
+    }
+
+    // Test
+    void VisualHeatEffect() {
+        float colorScale = curHeat / thresholdHeat;
+        GetComponent<SpriteRenderer>().color = new Color(1, 1 - 1 * colorScale, 1 - 1 * colorScale);
+    }
+
 	void Accelerate ()
     {
         if (landed) {
@@ -185,7 +255,11 @@ public class PrototypePlayer : MonoBehaviour {
     }
 
 	void FirePrimary() {
-		curBatt = 0; //Placeholder for the creation of a Primary Weapon Projectile
+        if (Time.time - lastPrimStep > timeBetweenPrimSteps) {
+            GetComponent<ProjectileController>().shootNormalProjectile();
+            ApplyHeat(primHeat);
+            lastPrimStep = Time.time;
+        }
 	}
 
 	void FireAuxiliary() {
@@ -198,10 +272,15 @@ public class PrototypePlayer : MonoBehaviour {
 
     void enforceSpeedLimit()
     {
-        rb.velocity = rb.velocity.y > maxVelocity ? new Vector2(rb.velocity.x, maxVelocity) : rb.velocity;
-        rb.velocity = rb.velocity.x > maxVelocity ? new Vector2(maxVelocity, rb.velocity.y) : rb.velocity;
-        rb.velocity = rb.velocity.y < -maxVelocity ? new Vector2(rb.velocity.x, -maxVelocity) : rb.velocity;
-        rb.velocity = rb.velocity.y < -maxVelocity ? new Vector2(rb.velocity.x, -maxVelocity) : rb.velocity;
+        if (rb.velocity.y > maxVelocity) {
+            rb.velocity = new Vector2(rb.velocity.x, maxVelocity); 
+        } else if (rb.velocity.x > maxVelocity) {
+            rb.velocity = new Vector2(maxVelocity, rb.velocity.y);
+        } else if (rb.velocity.y < -maxVelocity) {
+            rb.velocity = new Vector2(rb.velocity.x, -maxVelocity);
+        } else if (rb.velocity.x < -maxVelocity) {
+            rb.velocity = new Vector2(rb.velocity.x, -maxVelocity);
+        }
     }
 
     void createFixedLock(GameObject other) {
