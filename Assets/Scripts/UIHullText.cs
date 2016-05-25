@@ -10,6 +10,11 @@ public class UIHullText : MonoBehaviour {
     public Text heatLabel;
     public Text batteryLabel;
 
+    public Scrollbar HullBar;
+    public Scrollbar ShieldBar;
+    public Scrollbar HeatBar;
+    public Scrollbar BatteryBar;
+
     private GameObject player; // Variable storing the player GameObject
 
 
@@ -26,5 +31,19 @@ public class UIHullText : MonoBehaviour {
         shieldLabel.text = "Shield: " + player.GetComponent<PrototypePlayer>().curShield + "/" + player.GetComponent<PrototypePlayer>().maxShield;
         speedLabel.text = "Speed: " + Mathf.Round(player.GetComponent<Rigidbody2D>().velocity.magnitude) + " km/s" + " || X: " + player.GetComponent<Rigidbody2D>().velocity.x
                             + " | Y: " + player.GetComponent<Rigidbody2D>().velocity.y; // Need to round to two decimal places
-	}
+
+        HullBar.size = (float)player.GetComponent<PrototypePlayer>().curHull / player.GetComponent<PrototypePlayer>().maxHull;
+        ShieldBar.size = (float)player.GetComponent<PrototypePlayer>().curShield / player.GetComponent<PrototypePlayer>().maxShield;
+        HeatBar.size = (float)player.GetComponent<PrototypePlayer>().curHeat / player.GetComponent<PrototypePlayer>().thresholdHeat;
+        BatteryBar.size = (float)player.GetComponent<PrototypePlayer>().curBatt / player.GetComponent<PrototypePlayer>().maxBatt;
+    }
+
+
+    public void Damage(int value) {
+        player.GetComponent<PrototypePlayer>().curHull -= value;
+    }
+
+    public void Discharge(int value) {
+        player.GetComponent<PrototypePlayer>().curBatt -= value;
+    }
 }
