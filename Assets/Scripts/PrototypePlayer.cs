@@ -294,7 +294,13 @@ public class PrototypePlayer : MonoBehaviour {
 
 	void FirePrimary() {
         if (Time.time - lastPrimStep > timeBetweenPrimSteps) {
-            GetComponent<ProjectileController>().shootNormalProjectile();
+			// Test for weapon type (0 = projectile, 1 = laser) and act accordingly
+			if (primType == 0) {
+            	GetComponent<ProjectileController>().shootNormalProjectile();
+			}
+			else {
+				GetComponent<ProjectileController>().shootNormalLaser();
+			}
             ApplyHeat(primHeat);
             lastPrimStep = Time.time;
         }
