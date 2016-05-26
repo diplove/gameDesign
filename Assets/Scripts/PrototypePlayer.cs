@@ -143,6 +143,10 @@ public class PrototypePlayer : MonoBehaviour {
 			}
 		}
 
+		if (Input.GetKeyUp("z")) {
+			StopPrimary();
+		}
+
 		if (Input.GetKey("x")) {
 			if (curBatt >= auxCost) {
 				curBatt -= auxCost;
@@ -296,14 +300,19 @@ public class PrototypePlayer : MonoBehaviour {
         if (Time.time - lastPrimStep > timeBetweenPrimSteps) {
 			// Test for weapon type (0 = projectile, 1 = laser) and act accordingly
 			if (primType == 0) {
-            	GetComponent<ProjectileController>().shootNormalProjectile();
-			}
-			else {
-				GetComponent<ProjectileController>().shootNormalLaser();
+				GetComponent<ProjectileController> ().shootNormalProjectile ();
+			} else {
+				GetComponent<LaserController> ().activateLaser ();
 			}
             ApplyHeat(primHeat);
             lastPrimStep = Time.time;
         }
+	}
+
+	void StopPrimary() {
+		if (primType == 1) {
+			GetComponent<LaserController> ().deactivateLaser ();
+		}
 	}
 
 	void FireAuxiliary() {

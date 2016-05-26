@@ -16,7 +16,6 @@ public class ProjectileController : MonoBehaviour {
     
     // Inspector assigned projectiles
     public GameObject normalProjectile;
-	public GameObject normalLaser;
 
     public GameObject WeaponOneShootPoint; // Point where the first weapon shoots from
     public GameObject WeaponTwoShootPoint; // ^^ Second weapon
@@ -48,20 +47,6 @@ public class ProjectileController : MonoBehaviour {
         return np;
     }
 
-	GameObject newLaser() {
-		// Find inactive projectile in list
-		foreach (GameObject projectile in normalProjectiles) {
-			if (projectile.activeInHierarchy == false) {
-				projectile.SetActive(true);
-				return projectile;
-			}
-		}
-		// If there are no avaliable inactive projectiles, make a new one. - Dynamic
-		GameObject np = Instantiate(normalLaser);
-		normalProjectiles.Add(np);
-		return np;
-	}
-
     public void shootNormalProjectile() {
 
         if (Time.time - lastStep > timeBetweenSteps) {
@@ -80,17 +65,4 @@ public class ProjectileController : MonoBehaviour {
        // Debug.Log(normalProjectiles.Count + " : " + maxNormalProjectiles + " (" + initialNormalProjectileAmount + ")");
     }
 
-	public void shootNormalLaser() {
-
-		if (Time.time - lastStep > timeBetweenSteps) {
-			GameObject p1 = newLaser();
-			p1.transform.position = WeaponOneShootPoint.transform.position;
-			p1.transform.rotation = transform.rotation;
-
-			//p1.GetComponent<Rigidbody2D>().AddForce(p1.transform.up * normalProjectileSpeed);
-			lastStep = Time.time;
-		}
-
-		// Debug.Log(normalProjectiles.Count + " : " + maxNormalProjectiles + " (" + initialNormalProjectileAmount + ")");
-	}
 }
