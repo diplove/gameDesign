@@ -28,7 +28,7 @@ public class LaserController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (fire == true) {
-			laser.transform.position = new Vector3 (weaponHardpoint.transform.position.x, weaponHardpoint.transform.position.y+offset, -1);
+			laser.transform.position = new Vector3 (weaponHardpoint.transform.position.x, weaponHardpoint.transform.position.y, -1);
 			laser.transform.rotation = weaponHardpoint.transform.rotation;
 			laser.SetActive (true);
 		} else {
