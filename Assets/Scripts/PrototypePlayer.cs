@@ -105,6 +105,11 @@ public class PrototypePlayer : MonoBehaviour {
 	}
 
     void FixedUpdate() {
+
+        if (!landed) {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotation), turnRate * Time.deltaTime);
+        }
+
         CheckHull();
         HeatUpkeep();
         GeneratorUpkeep();
@@ -131,9 +136,7 @@ public class PrototypePlayer : MonoBehaviour {
         {
             rotation.z -= turnAmount;
         }
-        if (!landed) {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotation), turnRate * Time.deltaTime);
-        }
+
 
 		if (Input.GetKey("z")) {
 			if (curBatt >= primCost) {

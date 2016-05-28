@@ -38,6 +38,7 @@ public class LaserController : MonoBehaviour {
                 laser.GetComponent<LineRenderer>().SetPosition(1, hit.point);
                 laserParticles.transform.position = hit.point;
                 laserParticles.SetActive(true);
+                ApplyDamage(hit.collider.gameObject);
             } else {
                 laser.GetComponent<LineRenderer>().SetPosition(1, weaponHardpoint.transform.position + (transform.up * laserMaxDistance));
                 laserParticles.SetActive(false);
@@ -47,6 +48,12 @@ public class LaserController : MonoBehaviour {
         } else {
             laser.SetActive(false);
             laserParticles.SetActive(false);
+        }
+    }
+
+    void ApplyDamage(GameObject target) {
+        if (target.tag == "asteroid") {
+            target.SendMessage("HitDamage", damage);
         }
     }
 
