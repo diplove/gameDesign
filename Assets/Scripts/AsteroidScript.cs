@@ -2,8 +2,8 @@
 using System.Collections;
 
 public class AsteroidScript : MonoBehaviour {
-    public float MinTorque = -100f;
-    public float MaxTorque = 100f;
+    public float MinTorque = -10f;
+    public float MaxTorque = 10f;
     public float MinForce = 20f;
     public float MaxForce = 40f;
     public float health;

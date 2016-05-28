@@ -89,11 +89,14 @@ public class PrototypePlayer : MonoBehaviour {
 
     // Death Effects
     public GameObject deathExplosion;
+
     
 
 	// Use this for initialization
 	void Start () {
 	rb = GetComponent<Rigidbody2D>();
+        deathExplosion = Instantiate(deathExplosion);
+        deathExplosion.SetActive(false);
         rotation = transform.rotation.eulerAngles;
 
         curHull = maxHull; // Current is set to max at start
@@ -170,7 +173,10 @@ public class PrototypePlayer : MonoBehaviour {
     }
 
     void Respawn() {
+        deathExplosion.SetActive(false);
+        GetComponent<SpriteRenderer>().enabled = true;
         GetComponent<Rigidbody2D>().velocity = new Vector3(0, 0, 0);
+        GetComponent<Rigidbody2D>().isKinematic = false;
         curHeat = 0;
         VisualHeatEffect();
         curShield = maxShield;
@@ -179,7 +185,7 @@ public class PrototypePlayer : MonoBehaviour {
         curBatt = maxBatt;
         transform.position = GameObject.Find("SpaceDock").transform.position;
         transform.rotation = GameObject.Find("SpaceDock").transform.rotation;
-        GetComponent<Rigidbody2D>().isKinematic = false;
+        rotation = transform.rotation.eulerAngles;
     }
 
     void GeneratorUpkeep() {
@@ -248,9 +254,14 @@ public class PrototypePlayer : MonoBehaviour {
     }
 
     public void DestroySelf() {
+        deathExplosion.SetActive(true);
         GetComponent<Rigidbody2D>().isKinematic = true;
+        deathExplosion.transform.position = transform.position;
+        deathExplosion.GetComponent<Animator>().Play("VesselExplosion");
         GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
-        GetComponent<Animator>().Play("VesselExplode");
+        GetComponent<SpriteRenderer>().enabled = false;
+        Invoke("Respawn", 3);        
+
     }
 
     // Method called for dealing damage to vessel
