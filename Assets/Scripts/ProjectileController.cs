@@ -11,6 +11,8 @@ public class ProjectileController : MonoBehaviour {
     public int maxNormalProjectiles;
     public int normalProjectileSpeed;
 
+	public int numWeaponPorts; // Number of weapon ports used
+
     // Lists of projectiles
     private List<GameObject> normalProjectiles = new List<GameObject>();
     
@@ -19,6 +21,8 @@ public class ProjectileController : MonoBehaviour {
 
     public GameObject WeaponOneShootPoint; // Point where the first weapon shoots from
     public GameObject WeaponTwoShootPoint; // ^^ Second weapon
+	public GameObject WeaponThreeShootPoint; // ^^ Third weapon
+	public GameObject WeaponFourShootPoint; // ^^ Fourth weapon
 
 
 
@@ -51,14 +55,35 @@ public class ProjectileController : MonoBehaviour {
 
         if (Time.time - lastStep > timeBetweenSteps) {
             GameObject p1 = newProjectile();
-            GameObject p2 = newProjectile();
+            
             p1.transform.position = WeaponOneShootPoint.transform.position;
-            p1.transform.rotation = transform.rotation;
-            p2.transform.position = WeaponTwoShootPoint.transform.position;
-            p2.transform.rotation = transform.rotation;
-
+			p1.transform.rotation = transform.rotation;
             p1.GetComponent<Rigidbody2D>().AddForce(p1.transform.up * normalProjectileSpeed);
-            p2.GetComponent<Rigidbody2D>().AddForce(p2.transform.up * normalProjectileSpeed);
+            
+			if (numWeaponPorts > 1) {
+				GameObject p2 = newProjectile();
+
+				p2.transform.position = WeaponTwoShootPoint.transform.position;
+				p2.transform.rotation = transform.rotation;
+				p2.GetComponent<Rigidbody2D>().AddForce(p2.transform.up * normalProjectileSpeed);
+			}
+
+			if (numWeaponPorts > 2) {
+				GameObject p3 = newProjectile();
+
+				p3.transform.position = WeaponThreeShootPoint.transform.position;
+				p3.transform.rotation = transform.rotation;
+				p3.GetComponent<Rigidbody2D>().AddForce(p3.transform.up * normalProjectileSpeed);
+			}
+
+			if (numWeaponPorts > 3) {
+				GameObject p4 = newProjectile();
+
+				p4.transform.position = WeaponFourShootPoint.transform.position;
+				p4.transform.rotation = transform.rotation;
+				p4.GetComponent<Rigidbody2D>().AddForce(p4.transform.up * normalProjectileSpeed);
+			}
+
             lastStep = Time.time;
         }
 
