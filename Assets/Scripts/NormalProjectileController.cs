@@ -6,6 +6,9 @@ public class NormalProjectileController : MonoBehaviour {
     public Sprite projectileSprite;
     public Sprite explosionSprite;
 
+	private int countDown;
+	private bool isCounting;
+
     private float damage;
 
     void FixedUpdate() {
@@ -14,6 +17,8 @@ public class NormalProjectileController : MonoBehaviour {
 
     void Start() {
         UpdateDamage();
+		countDown = 2;
+		isCounting = false;
     }
 
     void OnCollisionEnter2D(Collision2D other) {
@@ -33,7 +38,9 @@ public class NormalProjectileController : MonoBehaviour {
 
     void Explode() {
         GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
-        GetComponent<Animator>().Play("normalProjectileExplode");
+        //GetComponent<Animator>().Play("normalProjectileExplode");
+		GetComponent<SpriteRenderer>().sprite = explosionSprite;
+		isCounting = true;
     }
 
     public void DeactivateSelf() {
@@ -45,6 +52,15 @@ public class NormalProjectileController : MonoBehaviour {
         damage = damageAmount;
     }
  
+	void Update () {
+		if (isCounting == true) {
+			countDown -= 1;
+		}
+
+		if (countDown <= 0) {
+			DeactivateSelf ();
+		}
+	}
 
     
 }

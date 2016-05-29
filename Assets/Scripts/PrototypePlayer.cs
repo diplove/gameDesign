@@ -60,11 +60,17 @@ public class PrototypePlayer : MonoBehaviour {
    
 
 	//Auxiliary Weapon
+	public bool hasAux;
+
 	public int auxDamage;
 	public int auxType;
 	public int auxRate;
+	public float auxBaseSpeed;
 	public int auxCost;
 	public float auxHeat;
+
+	private float lastAuxStep;
+	private float timeBetweenAuxSteps;
 
 	//Support System
 	public int suppSystem;
@@ -105,6 +111,7 @@ public class PrototypePlayer : MonoBehaviour {
         curHeat = 0;
 
         UpdatePrimaryWeapon();
+		UpdateAuxiliaryWeapon();
 	}
 
     void FixedUpdate() {
@@ -156,10 +163,16 @@ public class PrototypePlayer : MonoBehaviour {
 		}
 
 		if (Input.GetKey("x")) {
-			if (curBatt >= auxCost) {
+			if (curBatt >= auxCost && hasAux == true) {
 				//curBatt -= auxCost;
 				//curHeat += auxHeat;
 				FireAuxiliary();
+			}
+		}
+
+		if (Input.GetKeyUp("x")) {
+			if (hasAux == true) {
+				StopAux();
 			}
 		}
 
@@ -255,6 +268,10 @@ public class PrototypePlayer : MonoBehaviour {
         timeBetweenPrimSteps = primBaseSpeed / primRate;
     }
 
+	void UpdateAuxiliaryWeapon() {
+		timeBetweenAuxSteps = auxBaseSpeed / auxRate;
+	}
+
     public void DestroySelf() {
         deathExplosion.SetActive(true);
         GetComponent<Rigidbody2D>().isKinematic = true;
@@ -335,8 +352,28 @@ public class PrototypePlayer : MonoBehaviour {
 	}
 
 	void FireAuxiliary() {
-		curHeat += 10; //Placeholder for the creation of an Auxiliary Weapon Projectile
-		curBatt -= auxCost;
+		//curHeat += 10; //Placeholder for the creation of an Auxiliary Weapon Projectile
+		//curBatt -= auxCost;
+
+		if (Time.time - lastAuxStep > timeBetweenAuxSteps && curBatt >= auxCost) {
+			// Test for weapon type (0 = projectile, 1 = laser) and act accordingly
+			curBatt -= auxCost;
+			if (auxType == 0) {
+				GetComponent<Projectile2Controller> ().shootNormalProjectile ();
+			} else {
+				GetComponent<Laser2Controller> ().activateLaser ();
+			} 
+			ApplyHeat(auxHeat);
+			lastAuxStep = Time.time;
+		} else {
+			StopAux ();
+		}
+	}
+
+	void StopAux() {
+		if (auxType == 1) {
+			GetComponent<Laser2Controller> ().deactivateLaser ();
+		}
 	}
 
 	void ToggleSupport() {
