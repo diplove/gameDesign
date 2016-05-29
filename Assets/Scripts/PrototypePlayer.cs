@@ -143,9 +143,11 @@ public class PrototypePlayer : MonoBehaviour {
 
 		if (Input.GetKey("z")) {
 			if (curBatt >= primCost) {
-				curBatt -= primCost;
-				curHeat += primHeat;
+				//curBatt -= primCost;
+				//curHeat += primHeat;
 				FirePrimary();
+			} else {
+				StopPrimary ();
 			}
 		}
 
@@ -155,8 +157,8 @@ public class PrototypePlayer : MonoBehaviour {
 
 		if (Input.GetKey("x")) {
 			if (curBatt >= auxCost) {
-				curBatt -= auxCost;
-				curHeat += auxHeat;
+				//curBatt -= auxCost;
+				//curHeat += auxHeat;
 				FireAuxiliary();
 			}
 		}
@@ -311,16 +313,19 @@ public class PrototypePlayer : MonoBehaviour {
     }
 
 	void FirePrimary() {
-        if (Time.time - lastPrimStep > timeBetweenPrimSteps) {
+		if (Time.time - lastPrimStep > timeBetweenPrimSteps && curBatt >= primCost) {
 			// Test for weapon type (0 = projectile, 1 = laser) and act accordingly
+			curBatt -= primCost;
 			if (primType == 0) {
 				GetComponent<ProjectileController> ().shootNormalProjectile ();
 			} else {
 				GetComponent<LaserController> ().activateLaser ();
-			}
+			} 
             ApplyHeat(primHeat);
             lastPrimStep = Time.time;
-        }
+		} else {
+			StopPrimary ();
+		}
 	}
 
 	void StopPrimary() {
@@ -331,6 +336,7 @@ public class PrototypePlayer : MonoBehaviour {
 
 	void FireAuxiliary() {
 		curHeat += 10; //Placeholder for the creation of an Auxiliary Weapon Projectile
+		curBatt -= auxCost;
 	}
 
 	void ToggleSupport() {
