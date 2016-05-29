@@ -6,7 +6,7 @@ public class LaserController : MonoBehaviour {
 
 	public bool fire;
 
-	public GameObject weaponHardpoint;
+	public GameObject weaponHardPoint;
 
 	public GameObject laser;
 
@@ -22,6 +22,7 @@ public class LaserController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         laser = Instantiate(laser);
+        laser.GetComponent<LineRenderer>().sortingLayerName = "Projectiles";
         laserParticles = Instantiate(laserParticles);
         laserParticles.SetActive(false);
 		laser.SetActive (false);
@@ -30,25 +31,7 @@ public class LaserController : MonoBehaviour {
 
     void FixedUpdate() {
 
-        if (fire == true) {
-            laser.GetComponent<LineRenderer>().SetPosition(0, weaponHardpoint.transform.position);
-            RaycastHit2D hit = Physics2D.Raycast(weaponHardpoint.transform.position, transform.up, laserMaxDistance);
 
-            if(hit.collider != null) {
-                laser.GetComponent<LineRenderer>().SetPosition(1, hit.point);
-                laserParticles.transform.position = hit.point;
-                laserParticles.SetActive(true);
-                ApplyDamage(hit.collider.gameObject);
-            } else {
-                laser.GetComponent<LineRenderer>().SetPosition(1, weaponHardpoint.transform.position + (transform.up * laserMaxDistance));
-                laserParticles.SetActive(false);
-            }
-            
-           laser.SetActive(true);
-        } else {
-            laser.SetActive(false);
-            laserParticles.SetActive(false);
-        }
     }
 
     void ApplyDamage(GameObject target) {
@@ -75,12 +58,32 @@ public class LaserController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-		/*if (fire == true) {
+        /*if (fire == true) {
             laser.SetActive(true);
             laser.transform.position = new Vector3 (weaponHardpoint.transform.position.x, weaponHardpoint.transform.position.y, -1);
 			laser.transform.rotation = weaponHardpoint.transform.rotation;
 		} else {
 			laser.SetActive (false);
 		}*/
-	}
+
+        if (fire == true) {
+            laser.GetComponent<LineRenderer>().SetPosition(0, weaponHardPoint.transform.position);
+            RaycastHit2D hit = Physics2D.Raycast(weaponHardPoint.transform.position, weaponHardPoint.transform.up, laserMaxDistance);
+
+            if (hit.collider != null) {
+                laser.GetComponent<LineRenderer>().SetPosition(1, hit.point);
+                laserParticles.transform.position = hit.point;
+                laserParticles.SetActive(true);
+                ApplyDamage(hit.collider.gameObject);
+            } else {
+                laser.GetComponent<LineRenderer>().SetPosition(1, weaponHardPoint.transform.position + (weaponHardPoint.transform.up * laserMaxDistance));
+                laserParticles.SetActive(false);
+            }
+
+            laser.SetActive(true);
+        } else {
+            laser.SetActive(false);
+            laserParticles.SetActive(false);
+        }
+    }
 }
