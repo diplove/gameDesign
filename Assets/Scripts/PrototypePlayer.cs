@@ -182,7 +182,8 @@ public class PrototypePlayer : MonoBehaviour {
     }
 
     void CheckHull() {
-        if (curHull == 0) {
+        if (curHull <= 0) {
+            curHull = 0;
             DestroySelf();
         }
     }
@@ -294,7 +295,7 @@ public class PrototypePlayer : MonoBehaviour {
             }
             shield.GetComponent<Animator>().Play("hit");
         } else {
-            if ((curHull -= damage) < 0) {
+            if ((curHull -= damage) <= 0) {
                 curHull = 0;
             }
         }
@@ -384,11 +385,14 @@ public class PrototypePlayer : MonoBehaviour {
     {
         if (rb.velocity.y > maxVelocity) {
             rb.velocity = new Vector2(rb.velocity.x, maxVelocity); 
-        } else if (rb.velocity.x > maxVelocity) {
+        }
+        if (rb.velocity.x > maxVelocity) {
             rb.velocity = new Vector2(maxVelocity, rb.velocity.y);
-        } else if (rb.velocity.y < -maxVelocity) {
+        }
+        if (rb.velocity.y < -maxVelocity) {
             rb.velocity = new Vector2(rb.velocity.x, -maxVelocity);
-        } else if (rb.velocity.x < -maxVelocity) {
+        }
+        if (rb.velocity.x < -maxVelocity) {
             rb.velocity = new Vector2(rb.velocity.x, -maxVelocity);
         }
     }

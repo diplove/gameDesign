@@ -22,14 +22,26 @@ public class NormalProjectileController : MonoBehaviour {
     }
 
     void OnCollisionEnter2D(Collision2D other) {
-        if (other.gameObject.tag != "player") {
-            Explode();
-        }
         if (other.gameObject.tag == "asteroid") {
             Explode();
             other.transform.SendMessage("HitDamage", damage);
+        } else if (other.gameObject.tag == "bossChild") {
+            other.gameObject.SendMessage("HitDamage", damage);
+            Explode();
+        } else if (other.gameObject.tag == "boss") {
+            other.gameObject.SendMessage("HitDamage", gameObject);
+        } else if (other.gameObject.tag == "player") {
+            other.gameObject.SendMessage("HitDamage", (int)damage);
+            Explode();
+        } else if (other.gameObject.tag != "player") {
+            Explode();
+        }        
+    }
+
+    void OnTriggerEnter2D(Collider2D other) {
+        if (other.gameObject.tag == "enemyProjectile") {
+            Explode();
         }
-        
     }
 
     void UpdateDamage() {
@@ -52,6 +64,10 @@ public class NormalProjectileController : MonoBehaviour {
 
     public void setDamage(float damageAmount) {
         damage = damageAmount;
+    }
+
+    public float getDamage() {
+        return damage;
     }
  
 	void Update () {

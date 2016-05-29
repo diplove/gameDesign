@@ -12,24 +12,55 @@ public class Boss_Sphere_ProjectileTurret : MonoBehaviour {
     public float projectileSpeed;
     public float timeBetweenSteps;
     private float lastStep;
+    private bool isSpawned = false;
 
+    public float health;
+
+ 
 	void Start () {
         player = GameObject.FindGameObjectWithTag("player").transform;
 	
 	}
 
     void FixedUpdate() {
-        if (player.GetComponent<Collider2D>().IsTouching(hitBox)) {
-            LookAtPlayer();
-            FireTurret();
-        } else {
+        if (isSpawned) {
+            if (player.GetComponent<Collider2D>().IsTouching(hitBox)) {
+                LookAtPlayer();
+                FireTurret();
+            } 
         }
 
 
     }
+
+    public void hasSpawned() {
+        isSpawned = true;
+    }
+
+    public void Spawn() {
+        if (!isSpawned) {
+            GetComponent<Animator>().Play("BossProjectileTurretSpawn");
+        }
+    }
 	
 	void Update () {
 
+    }
+
+    void HitDamage(float damage) {
+        if (isSpawned) {
+            if ((health -= damage) < 0) {
+                DestroySelf();
+            } 
+        }
+    }
+
+    void DestroySelf() {
+        isSpawned = false;
+        GetComponentInParent<Boss_Sphere>().TurretDestroyed();
+        GetComponent<Animator>().Play("BossProjectileTurretPreSpawn");
+        turretTop.transform.rotation = new Quaternion(0, 0, 0, 0);
+        StartCoroutine(GetComponentInParent<Boss_Sphere>().ActivateNewTurret(gameObject));
     }
 
     void FireTurret() {

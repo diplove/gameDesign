@@ -20,6 +20,8 @@ public class BossProjectileController : MonoBehaviour {
         if (other.gameObject.tag == "player" || other.gameObject.tag == "asteroid") {
             Explode();
             other.transform.SendMessage("HitDamage", damage);
+        } else if (other.gameObject.tag == "projectile") {
+            Explode();
         }
 
 
