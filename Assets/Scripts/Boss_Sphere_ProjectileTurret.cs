@@ -6,6 +6,7 @@ public class Boss_Sphere_ProjectileTurret : MonoBehaviour {
     public GameObject turretTop;
     public Collider2D hitBox;
     public GameObject[] shootPoints = new GameObject[2];
+    public GameObject turretExplosion;
 
     private Transform player;
 
@@ -13,28 +14,32 @@ public class Boss_Sphere_ProjectileTurret : MonoBehaviour {
     public float timeBetweenSteps;
     private float lastStep;
     private bool isSpawned = false;
-
+    private bool vulnerable = false;
     public float health;
 
  
 	void Start () {
         player = GameObject.FindGameObjectWithTag("player").transform;
-	
-	}
+        StartCoroutine(GetComponentInParent<Boss_Sphere>().ActivateNewTurret(gameObject)); // TESTING
+
+    }
 
     void FixedUpdate() {
-        if (isSpawned) {
-            if (player.GetComponent<Collider2D>().IsTouching(hitBox)) {
+        /* if (isSpawned) {
+            if (player.GetComponent<Collider2D>().IsTouching(hitBox) && !player.GetComponent<PrototypePlayer>().getDeathState()) {
                 LookAtPlayer();
                 FireTurret();
             } 
-        }
+        } */
 
 
     }
 
     public void hasSpawned() {
         isSpawned = true;
+        if (GetComponentInParent<Boss_Sphere>().PhaseOneLoaded()) {
+            ToggleVulnerable();
+        }
     }
 
     public void Spawn() {
@@ -44,24 +49,32 @@ public class Boss_Sphere_ProjectileTurret : MonoBehaviour {
     }
 	
 	void Update () {
+        if (isSpawned && vulnerable) {
+            if (player.GetComponent<Collider2D>().IsTouching(hitBox) && !player.GetComponent<PrototypePlayer>().getDeathState()) {
+                LookAtPlayer();
+                FireTurret();
+            }
+        }
 
     }
 
     void HitDamage(float damage) {
-        if (isSpawned) {
+        if (isSpawned && vulnerable) {
             if ((health -= damage) < 0) {
-                DestroySelf();
+                Instantiate(turretExplosion, transform.position, transform.rotation);
+                GetComponentInParent<Boss_Sphere>().TurretDestroyedTest(gameObject); // TESTING
             } 
         }
     }
 
-    void DestroySelf() {
-        isSpawned = false;
-        GetComponentInParent<Boss_Sphere>().TurretDestroyed();
-        GetComponent<Animator>().Play("BossProjectileTurretPreSpawn");
-        turretTop.transform.rotation = new Quaternion(0, 0, 0, 0);
-        StartCoroutine(GetComponentInParent<Boss_Sphere>().ActivateNewTurret(gameObject));
+    public void ToggleVulnerable() {
+        vulnerable = !vulnerable;
     }
+
+    void DestroySelf() {
+        Instantiate(turretExplosion, transform.position, transform.rotation);
+        Destroy(gameObject);
+    } 
 
     void FireTurret() {
         if (Time.time - lastStep > timeBetweenSteps) {

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class Boss_Sphere : MonoBehaviour {
 
     public float outerRotationSpeed;
+    public float maxOuterRotationSpeed;
     public int numberOfProjectiles;
     public float projectileDamage;
     public float health;
@@ -21,11 +22,23 @@ public class Boss_Sphere : MonoBehaviour {
     // Phase 1 parameters
     private bool InitialTurretsActivated = false;
     private bool isSpawningInitial = false;
-    
+    private bool phaseOneEventRunning = false;
+
+    // Turret Prefabs
+    public GameObject laserTurretPrefab;
+    public GameObject projectileTurretPrefab;
+
+    // Special
+    private GameObject camera;
+    private GameObject canvas;
 
 
     void Start() {
         InstantiateProjectiles();
+        camera = GameObject.Find("Main Camera");
+        canvas = GameObject.Find("Canvas");
+       // camera.GetComponent<followPlayer>().SetTarget(gameObject.transform);
+       // canvas.SetActive(false);
     }
     
 
@@ -33,20 +46,92 @@ public class Boss_Sphere : MonoBehaviour {
         if (battlePhase == 1) {
             RotateOuterTurrets();
             if (!InitialTurretsActivated && !isSpawningInitial) {
+                if ((outerRotationSpeed *= 1.001f) > maxOuterRotationSpeed) {
+                    outerRotationSpeed = maxOuterRotationSpeed;
+                }
                 StartCoroutine(ActivateAllTurrets());
             }
         }
     }
 
     void Update() {
+        if (!phaseOneEventRunning && battlePhase == 1 && InitialTurretsActivated) {
+            StartCoroutine(PhaseOneEvents());
+        } else {
+
+        }
+    }
+
+    public IEnumerator PhaseOneEvents() {
+        phaseOneEventRunning = true;
+        ActivateLaserTurrets();
+        yield return new WaitForSeconds((int)Random.Range(10, 20));
+        DeactivateLaserTurrets();
+        yield return new WaitForSeconds((int)Random.Range(1, 10));
+        phaseOneEventRunning = false;
 
     }
 
-    public void TurretDestroyed() {
+    void ActivateLaserTurrets() {
+        foreach (GameObject obj in turrets) {
+            if (obj.GetComponent<Boss_Sphere_LaserTurret>()) {
+                obj.GetComponent<Boss_Sphere_LaserTurret>().ActivateLaser();
+            }
+        }
+    }
+
+    void DeactivateLaserTurrets() {
+        foreach (GameObject obj in turrets) {
+            if (obj.GetComponent<Boss_Sphere_LaserTurret>()) {
+                obj.GetComponent<Boss_Sphere_LaserTurret>().DeactivateLaser();
+            }
+        }
+    }
+
+    /* public void TurretDestroyed() {
+        health -= 1000;
+        if (health <= 0) {
+            Debug.Log("Sphere Phase 1 Ended");
+            battlePhase = 2;
+        }
+    } */
+
+    public void TurretDestroyedTest(GameObject obj) {
         health -= 1000;
         if (health <= 0) {
             battlePhase = 2;
+            ChangeToPhaseTwo();
+        } else {
+            RespawnTurret(obj);
         }
+    }
+
+    void RespawnTurret(GameObject obj) {
+        Vector3 pos = obj.transform.position;
+        Quaternion rot = obj.transform.rotation;
+        int arrayPos = 0;
+        for (int i = 0; i < 4; i++) {
+            if (turrets[i] == obj) {
+                arrayPos = i;
+                break;
+            }
+        }
+        obj.SetActive(false);
+        if (Random.value >= 0.5) {
+            turrets[arrayPos] = (GameObject)Instantiate(projectileTurretPrefab, pos, rot);
+        } else {
+            turrets[arrayPos] = (GameObject)Instantiate(laserTurretPrefab, pos, rot);
+            if (phaseOneEventRunning) {
+                turrets[arrayPos].GetComponent<Boss_Sphere_LaserTurret>().ActivateLaser();
+            }
+        }
+        turrets[arrayPos].transform.parent = gameObject.transform;
+        Destroy(obj);
+    }
+    
+
+    public bool PhaseOneLoaded() {
+        return InitialTurretsActivated;
     }
 
     void HitDamage(GameObject obj) {
@@ -62,17 +147,8 @@ public class Boss_Sphere : MonoBehaviour {
         }
     }
 
-    /*public void ActivateNewTurret() {
-        if (battlePhase == 1) {
-            StartCoroutine(TurretActivate());
-            foreach (GameObject obj in turrets) {
-                obj.SendMessage("Spawn");
-            }
-        }
-    } */
-
     public IEnumerator ActivateNewTurret(GameObject obj) {
-        if (battlePhase == 1) {
+        if (battlePhase == 1 && InitialTurretsActivated) {
             yield return new WaitForSeconds(5);
             obj.SendMessage("Spawn");
         }
@@ -84,7 +160,16 @@ public class Boss_Sphere : MonoBehaviour {
             obj.SendMessage("Spawn");
             yield return new WaitForSeconds(5);
         }
+
+        camera.GetComponent<followPlayer>().SetTarget(GameObject.FindGameObjectWithTag("player").transform);
+        canvas.SetActive(true);
+
+        yield return new WaitForSeconds(2);
         InitialTurretsActivated = true;
+        foreach (GameObject obj in turrets) {
+            obj.SendMessage("ToggleVulnerable");
+        }
+
     }
 
 
@@ -111,4 +196,41 @@ public class Boss_Sphere : MonoBehaviour {
         bossProjectiles.Add(newProj);
         return newProj;
     }
+
+    void ChangeToPhaseTwo() {
+        StopAllCoroutines();
+        DeactivateLaserTurrets();    
+        
+        foreach(GameObject obj in turrets) {
+            obj.SendMessage("ToggleVulnerable");
+        }
+        StartCoroutine(TestDetatch());
+    }
+
+    IEnumerator TestDetatch() {
+        camera.GetComponent<followPlayer>().SetTarget(gameObject.transform);
+        canvas.SetActive(false);
+
+        yield return new WaitForSeconds(2);
+
+        foreach (GameObject obj in turrets) {
+            obj.transform.parent = null;
+           Rigidbody2D objrb = obj.AddComponent<Rigidbody2D>();
+            objrb.AddForce(obj.transform.up * 100);
+        }
+
+        yield return new WaitForSeconds(3);
+
+        foreach (GameObject obj in turrets) {
+            obj.SendMessage("DestroySelf");
+        }
+
+        yield return new WaitForSeconds(2);
+
+        camera.GetComponent<followPlayer>().SetTarget(GameObject.FindGameObjectWithTag("player").transform);
+        canvas.SetActive(true);
+        StopAllCoroutines();
+    }
+
+
 }

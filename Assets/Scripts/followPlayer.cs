@@ -13,4 +13,8 @@ public class followPlayer : MonoBehaviour {
 	void Update () {
 		transform.position = new Vector3 (target.position.x, target.position.y, -15);
 	}
+
+    public void SetTarget(Transform target) {
+        this.target = target;
+    }
 }

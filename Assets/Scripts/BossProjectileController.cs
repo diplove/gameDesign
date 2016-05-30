@@ -9,7 +9,6 @@ public class BossProjectileController : MonoBehaviour {
     private float damage;
 
     void FixedUpdate() {
-
     }
 
     void Start() {
@@ -17,11 +16,26 @@ public class BossProjectileController : MonoBehaviour {
     }
 
     void OnTriggerEnter2D(Collider2D other) {
-        if (other.gameObject.tag == "player" || other.gameObject.tag == "asteroid") {
-            Explode();
-            other.transform.SendMessage("HitDamage", damage);
-        } else { //if (other.gameObject.tag == "projectile") {
-            Explode();
+
+        switch(other.gameObject.tag) {
+            case "player":
+                other.transform.SendMessage("HitDamage", damage);
+                Explode();
+                break;
+            case "asteroid":
+                other.transform.SendMessage("HitDamage", damage);
+                Explode();
+                break;
+            case "projectile":
+                Explode();
+                break;
+            case "enemyProjectile":
+                //Explode();
+                break;
+            case "enemyShip":
+                other.transform.SendMessage("HitDamage", damage);
+                Explode();
+                break;
         }
 
 
@@ -34,7 +48,7 @@ public class BossProjectileController : MonoBehaviour {
     void Explode() {
         GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
         DeactivateSelf(); // Temporary
-        //GetComponent<Animator>().Play("normalProjectileExplode");
+
     }
 
     public void DeactivateSelf() {

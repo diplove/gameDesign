@@ -95,6 +95,7 @@ public class PrototypePlayer : MonoBehaviour {
 
     // Death Effects
     public GameObject deathExplosion;
+    private bool dead = false;
 
     
 
@@ -118,7 +119,6 @@ public class PrototypePlayer : MonoBehaviour {
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotation), turnRate * Time.deltaTime);
         }
 
-        CheckHull();
         HeatUpkeep();
         GeneratorUpkeep();
         SupportUpkeep();
@@ -179,15 +179,8 @@ public class PrototypePlayer : MonoBehaviour {
 		}
     }
 
-    void CheckHull() {
-        if (curHull <= 0) {
-            curHull = 0;
-            DestroySelf();
-        }
-    }
 
     void Respawn() {
-        deathExplosion.SetActive(false);
         GetComponent<SpriteRenderer>().enabled = true;
         GetComponent<Rigidbody2D>().velocity = new Vector3(0, 0, 0);
         GetComponent<Rigidbody2D>().isKinematic = false;
@@ -200,6 +193,7 @@ public class PrototypePlayer : MonoBehaviour {
         transform.position = GameObject.Find("SpaceDock").transform.position;
         transform.rotation = GameObject.Find("SpaceDock").transform.rotation;
         rotation = transform.rotation.eulerAngles;
+        dead = false;
     }
 
     void GeneratorUpkeep() {
@@ -272,28 +266,35 @@ public class PrototypePlayer : MonoBehaviour {
 	}
 
     public void DestroySelf() {
-        GetComponent<Rigidbody2D>().isKinematic = true;
         Instantiate(deathExplosion, transform.position, transform.rotation);
+        GetComponent<Rigidbody2D>().isKinematic = true;
         GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
         GetComponent<SpriteRenderer>().enabled = false;
-        Invoke("Respawn", 3);        
+        Invoke("Respawn", 3); 
+    }
 
+    public bool getDeathState() {
+        return dead;
     }
 
     // Method called for dealing damage to vessel
     public void HitDamage(int damage) {
-        if (curShield > 0) {
-            if (curShield - damage <= 0) {
-                int diff = damage - curShield;
-                curShield = 0;
-                curHull -= diff;
+        if (!dead) {
+            if (curShield > 0) {
+                if (curShield - damage <= 0) {
+                    int diff = damage - curShield;
+                    curShield = 0;
+                    curHull -= diff;
+                } else {
+                    curShield -= damage;
+                }
+                shield.GetComponent<Animator>().Play("hit");
             } else {
-                curShield -= damage;
-            }
-            shield.GetComponent<Animator>().Play("hit");
-        } else {
-            if ((curHull -= damage) <= 0) {
-                curHull = 0;
+                if ((curHull -= damage) <= 0) {
+                    curHull = 0;
+                    dead = true;
+                    DestroySelf();
+                }
             }
         }
     }
