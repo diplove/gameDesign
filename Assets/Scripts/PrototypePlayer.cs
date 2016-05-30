@@ -101,8 +101,6 @@ public class PrototypePlayer : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 	rb = GetComponent<Rigidbody2D>();
-        deathExplosion = Instantiate(deathExplosion);
-        deathExplosion.SetActive(false);
         rotation = transform.rotation.eulerAngles;
 
         curHull = maxHull; // Current is set to max at start
@@ -274,10 +272,8 @@ public class PrototypePlayer : MonoBehaviour {
 	}
 
     public void DestroySelf() {
-        deathExplosion.SetActive(true);
         GetComponent<Rigidbody2D>().isKinematic = true;
-        deathExplosion.transform.position = transform.position;
-        deathExplosion.GetComponent<Animator>().Play("VesselExplosion");
+        Instantiate(deathExplosion, transform.position, transform.rotation);
         GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
         GetComponent<SpriteRenderer>().enabled = false;
         Invoke("Respawn", 3);        
@@ -288,8 +284,9 @@ public class PrototypePlayer : MonoBehaviour {
     public void HitDamage(int damage) {
         if (curShield > 0) {
             if (curShield - damage <= 0) {
+                int diff = damage - curShield;
                 curShield = 0;
-                curHull -= damage;
+                curHull -= diff;
             } else {
                 curShield -= damage;
             }

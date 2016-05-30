@@ -22,20 +22,49 @@ public class NormalProjectileController : MonoBehaviour {
     }
 
     void OnCollisionEnter2D(Collision2D other) {
-        if (other.gameObject.tag == "asteroid") {
-            Explode();
-            other.transform.SendMessage("HitDamage", damage);
-        } else if (other.gameObject.tag == "bossChild") {
-            other.gameObject.SendMessage("HitDamage", damage);
-            Explode();
-        } else if (other.gameObject.tag == "boss") {
-            other.gameObject.SendMessage("HitDamage", gameObject);
-        } else if (other.gameObject.tag == "player") {
-            other.gameObject.SendMessage("HitDamage", (int)damage);
-            Explode();
-        } else if (other.gameObject.tag != "player") {
-            Explode();
-        }        
+        /* if (other.gameObject.tag == "asteroid") {
+             Explode();
+             other.transform.SendMessage("HitDamage", damage);
+         } else if (other.gameObject.tag == "bossChild") {
+             other.gameObject.SendMessage("HitDamage", damage);
+             Explode();
+         } else if (other.gameObject.tag == "boss") {
+             other.gameObject.SendMessage("HitDamage", gameObject);
+         } else if (other.gameObject.tag == "player") {
+             other.gameObject.SendMessage("HitDamage", (int)damage);
+             Explode();
+         } else if (other.gameObject.tag != "player") {
+             Explode();
+         }   */
+
+        switch (other.gameObject.tag) {
+            case "asteroid":
+                Explode();
+                other.transform.SendMessage("HitDamage", damage);
+                break;
+            case "bossChild":
+                other.gameObject.SendMessage("HitDamage", damage);
+                Explode();
+                break;
+            case "boss":
+                other.gameObject.SendMessage("HitDamage", gameObject);
+                break;
+            case "player":
+                other.gameObject.SendMessage("HitDamage", (int)damage);
+                Explode();
+                break;
+            case "enemyShip":
+                other.gameObject.SendMessage("HitDamage", damage);
+                Explode();
+                break;
+            case "enemyProjectile":
+                Explode();
+                break;
+            default:
+                Debug.Log("Projectile " + gameObject + " encountered object with no tag handler");
+                break;
+        }
+
     }
 
     void OnTriggerEnter2D(Collider2D other) {

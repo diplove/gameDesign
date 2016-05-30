@@ -27,10 +27,27 @@ public class Laser2Controller : MonoBehaviour {
 	}
 
 	void ApplyDamage(GameObject target) {
-		if (target.tag == "asteroid") {
-			target.SendMessage("HitDamage", damage);
-		}
-	}
+        switch (target.gameObject.tag) {
+            case "asteroid":
+                target.transform.SendMessage("HitDamage", damage);
+                break;
+            case "bossChild":
+                target.gameObject.SendMessage("HitDamage", damage);
+                break;
+            case "boss":
+                target.gameObject.SendMessage("HitDamage", gameObject);
+                break;
+            case "enemyShip":
+                target.gameObject.SendMessage("HitDamage", damage);
+                break;
+            case "enemyProjectile":
+                target.gameObject.SendMessage("Explode");
+                break;
+            default:
+                Debug.Log("Laser " + gameObject + " encountered object with no tag handler");
+                break;
+        }
+    }
 
 	public void activateLaser() {
 		fire = true;
