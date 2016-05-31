@@ -31,25 +31,6 @@ public class Boss_Sphere_LaserTurret : MonoBehaviour {
         StartCoroutine(GetComponentInParent<Boss_Sphere>().ActivateNewTurret(gameObject)); // TESTING
     }
 	
-    void FixedUpdate() {
-        /* if (firing) {
-            lr.enabled = true;
-            lr.SetPosition(0, laserStartPoint.transform.position);
-            RaycastHit2D hit = Physics2D.Raycast(laserStartPoint.transform.position, transform.up, laserMaxDistance);
-
-            if (hit.collider != null) {
-                lr.SetPosition(1, hit.point);
-                Debug.Log(hit.collider.gameObject);
-                if (hit.collider.gameObject.tag == "player") {
-                    hit.collider.gameObject.SendMessage("HitDamage", laserDamage);
-                } else if (hit.collider.gameObject.tag == "projectile") {
-                    hit.collider.gameObject.SendMessage("Explode");
-                }
-            } else {
-                lr.SetPosition(1, laserStartPoint.transform.position + (transform.up * laserMaxDistance));
-            }
-        } */
-    }
 	// Update is called once per frame
 	void Update () {
         if (firing) {
@@ -58,10 +39,11 @@ public class Boss_Sphere_LaserTurret : MonoBehaviour {
             RaycastHit2D hit = Physics2D.Raycast(laserStartPoint.transform.position, transform.up, laserMaxDistance);
 
             if (hit.collider != null) {
-                lr.SetPosition(1, hit.point);
                 if (hit.collider.gameObject.tag == "player") {
+                    lr.SetPosition(1, hit.point);
                     hit.collider.gameObject.SendMessage("HitDamage", laserDamage);
                 } else if (hit.collider.gameObject.tag == "projectile" || hit.collider.gameObject.tag == "enemyProjectile") {
+                    lr.SetPosition(1, laserStartPoint.transform.position + (transform.up * laserMaxDistance));
                     hit.collider.gameObject.SendMessage("Explode");
                 }
             } else {

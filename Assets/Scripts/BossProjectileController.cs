@@ -4,23 +4,37 @@ using System.Collections;
 public class BossProjectileController : MonoBehaviour {
 
     public Sprite projectileSprite;
-    //public Sprite explosionSprite;
+    public Sprite explosionSprite;
 
     private float damage;
 
-    void FixedUpdate() {
+    private int countDown;
+    private bool isCounting;
+
+    void Update() {
+        if (isCounting == true) {
+            countDown -= 1;
+        }
+
+        if (countDown <= 0) {
+            DeactivateSelf();
+        }
     }
 
     void Start() {
         UpdateDamage();
+        countDown = 5;
+        isCounting = false;
     }
 
     void OnTriggerEnter2D(Collider2D other) {
-
         switch(other.gameObject.tag) {
             case "player":
                 other.transform.SendMessage("HitDamage", damage);
                 Explode();
+                break;
+            case "playerChild":
+                other.transform.SendMessage("HitDamage", damage);
                 break;
             case "asteroid":
                 other.transform.SendMessage("HitDamage", damage);
@@ -28,7 +42,7 @@ public class BossProjectileController : MonoBehaviour {
                 break;
             case "projectile":
                 Explode();
-                break;
+                break;            
             case "enemyProjectile":
                 //Explode();
                 break;
@@ -36,7 +50,12 @@ public class BossProjectileController : MonoBehaviour {
                 other.transform.SendMessage("HitDamage", damage);
                 Explode();
                 break;
-        }
+            case "ignoreTrigger":
+                break;
+            default:
+                Explode();
+                break;
+        } 
 
 
     }
@@ -46,14 +65,16 @@ public class BossProjectileController : MonoBehaviour {
     }
 
     void Explode() {
-        GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
-        DeactivateSelf(); // Temporary
-
+        GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        GetComponent<SpriteRenderer>().sprite = explosionSprite;
+        isCounting = true;
     }
 
     public void DeactivateSelf() {
+        isCounting = false;
+        countDown = 5;
         gameObject.SetActive(false);
-
+        GetComponent<SpriteRenderer>().sprite = projectileSprite;
     }
 
     public void setDamage(float damageAmount) {

@@ -4,19 +4,19 @@ using System.Collections;
 public class MoonOrbit : MonoBehaviour {
 
     public float orbitSpeed;
+    public float moonMass;
 
-    // Use this for initialization
+    private Rigidbody2D rb;
+
     void Start() {
-
+        rb = gameObject.AddComponent<Rigidbody2D>();
+        rb.mass = moonMass;
+        rb.isKinematic = true;
+        gameObject.AddComponent<CircleCollider2D>();
     }
-
-    // Update is called once per frame
-    void Update() {
-
-    }
-
+    
     void FixedUpdate() {
-        transform.RotateAround(transform.parent.transform.position, Vector3.forward, orbitSpeed * Time.deltaTime);
+        transform.RotateAround(transform.root.transform.position, Vector3.forward, orbitSpeed * Time.deltaTime);
     }
 
     void OnCollisionEnter2D(Collision2D other) {
@@ -28,7 +28,7 @@ public class MoonOrbit : MonoBehaviour {
                 }
 
             } else if (playerRb.velocity.magnitude > 1.5) {
-                other.gameObject.SendMessage("HitDamage", (playerRb.velocity.sqrMagnitude * playerRb.mass) * GetComponent<Rigidbody2D>().mass);
+                other.gameObject.SendMessage("HitDamage", (playerRb.velocity.sqrMagnitude * playerRb.mass) * rb.mass);
             }
         }
 

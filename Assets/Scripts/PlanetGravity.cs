@@ -4,72 +4,49 @@ using System.Collections.Generic;
 
 public class PlanetGravity : MonoBehaviour {
 
+    //public CircleCollider2D planetPhysicalCollider;
     public float mass;
     public float gravConstant;
+    public float gravityFieldSizeMultiplier = 10f;
 
-    [SerializeField]
-    private CircleCollider2D planetCollider;
-    [SerializeField]
-    private Collider2D gravDeadZone;
+    private CircleCollider2D planetPhysicalCollider;
+    private CircleCollider2D gravitationalField;
 
-    private List<Transform> deadZoneObjects = new List<Transform>();
+    private List<Transform> objectsInGravity = new List<Transform>();
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-    void FixedUpdate()
-    {
-        calculateDeadZone();
+    void Start() {
+        planetPhysicalCollider = transform.GetChild(0).GetComponent<PlanetController>().getCollider();
+        gravitationalField = gameObject.AddComponent<CircleCollider2D>();
+        gravitationalField.radius = planetPhysicalCollider.radius * gravityFieldSizeMultiplier;
+        gravitationalField.isTrigger = true;
     }
 
-
-    void OnCollisionEnter2D(Collision2D other) {
-        if (other.gameObject.tag == "player") {
-            Rigidbody2D playerRb = other.gameObject.GetComponent<Rigidbody2D>();
-            if (playerRb.velocity.sqrMagnitude < 1) {
-                if (Vector3.Angle(other.transform.up, transform.position - other.transform.position) > 170) {
-                    playerRb.velocity = new Vector2(0, 0);
-                }
-            } else if (playerRb.velocity.magnitude > 1.5) {
-                other.gameObject.SendMessage("HitDamage", (playerRb.velocity.sqrMagnitude * playerRb.mass) * mass);
-            }
-
-        }
+    void FixedUpdate() {
+        ApplyGravity();
     }
 
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.tag == "player")
-        {
-            if (gravDeadZone.IsTouching(other)) {
-                deadZoneObjects.Add(other.transform);
-            }
-        }
-    }
-
-    void OnTriggerExit2D(Collider2D other)
-    {
+    void OnTriggerEnter2D(Collider2D other) {
         if (other.tag == "player") {
-            if (!gravDeadZone.IsTouching(other)) {
-                deadZoneObjects.Remove(other.transform);
+            if (gravitationalField.IsTouching(other)) {
+                objectsInGravity.Add(other.transform);
             }
         }
     }
 
-    void calculateDeadZone()
-    {
-        foreach (Transform t in deadZoneObjects) {
+    void OnTriggerExit2D(Collider2D other) {
+        if (other.tag == "player") {
+            if (!gravitationalField.IsTouching(other)) {
+                objectsInGravity.Remove(other.transform);
+            }
+        }
+    }
+
+    void ApplyGravity() {
+        foreach (Transform t in objectsInGravity) {
             Vector3 diff = transform.position - t.position;
 
 
-            if (diff.magnitude > planetCollider.radius + 2.5) { // Safe zone. Planet collider radius plus 2
+            if (diff.magnitude > planetPhysicalCollider.radius + 2.5) { // Safe zone. Planet collider radius plus 2.5
 
                 Vector3 direction = diff.normalized;
                 Rigidbody2D tRb = t.GetComponent<Rigidbody2D>();
@@ -80,4 +57,5 @@ public class PlanetGravity : MonoBehaviour {
             }
         }
     }
+    
 }

@@ -16,8 +16,10 @@ public class Laser2Controller : MonoBehaviour {
 
 	private float damage;
 
-	// Use this for initialization
-	void Start () {
+    private LayerMask mask = ~(1 << 8 | 1 << 2);
+
+    // Use this for initialization
+    void Start () {
 		laser = Instantiate(laser);
 		laser.GetComponent<LineRenderer>().sortingLayerName = "Projectiles";
 		laserParticles = Instantiate(laserParticles);
@@ -26,7 +28,7 @@ public class Laser2Controller : MonoBehaviour {
 		UpdateDamage();
 	}
 
-	void ApplyDamage(GameObject target) {
+    void ApplyDamage(GameObject target) {
         switch (target.gameObject.tag) {
             case "asteroid":
                 target.transform.SendMessage("HitDamage", damage);
@@ -44,12 +46,12 @@ public class Laser2Controller : MonoBehaviour {
                 target.gameObject.SendMessage("Explode");
                 break;
             default:
-                Debug.Log("Laser " + gameObject + " encountered object with no tag handler");
+                //Debug.Log("Laser " + gameObject + " encountered object with no tag handler");
                 break;
         }
     }
 
-	public void activateLaser() {
+    public void activateLaser() {
 		fire = true;
 	}
 
@@ -69,9 +71,10 @@ public class Laser2Controller : MonoBehaviour {
 	void Update () {
 		if (fire == true) {
 			laser.GetComponent<LineRenderer>().SetPosition(0, weaponHardPoint.transform.position);
-			RaycastHit2D hit = Physics2D.Raycast(weaponHardPoint.transform.position, weaponHardPoint.transform.up, laserMaxDistance);
+			RaycastHit2D hit = Physics2D.Raycast(weaponHardPoint.transform.position, weaponHardPoint.transform.up, laserMaxDistance, mask);
 
 			if (hit.collider != null) {
+                Debug.Log("Hit!");
 				laser.GetComponent<LineRenderer>().SetPosition(1, hit.point);
 				laserParticles.transform.position = hit.point;
 				laserParticles.SetActive(true);

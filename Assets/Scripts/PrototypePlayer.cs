@@ -118,10 +118,11 @@ public class PrototypePlayer : MonoBehaviour {
         if (!landed) {
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotation), turnRate * Time.deltaTime);
         }
-
-        HeatUpkeep();
-        GeneratorUpkeep();
-        SupportUpkeep();
+        if (!dead) {
+            HeatUpkeep();
+            GeneratorUpkeep();
+            SupportUpkeep();
+        }
     }
 
     // Update is called once per frame
@@ -196,6 +197,10 @@ public class PrototypePlayer : MonoBehaviour {
         dead = false;
     }
 
+    public float getCurrentShield() {
+        return curShield;
+    }
+
     void GeneratorUpkeep() {
         //Generator Upkeep
         if (Time.time - lastGeneratorStep > timeBetweenGeneratorSteps) {
@@ -235,13 +240,12 @@ public class PrototypePlayer : MonoBehaviour {
         //Heat Upkeep
         if (Time.time - lastHeatStep > timeBetweenHeatSteps) {
             if (curHeat > thresholdHeat) {
-                //heatDamageTick += 1;
                 heatDamageTick = (int)(curHeat - thresholdHeat);
                 if (heatDamageTick > heatTickThreshold) {
                     if ((curHull -= heatDamageTick) < 0) {
                         curHull = 0;
+                        DestroySelf();
                     }
-                    //curHull -= 1;
                     heatDamageTick -= heatTickThreshold;
                 }
             }
@@ -266,11 +270,14 @@ public class PrototypePlayer : MonoBehaviour {
 	}
 
     public void DestroySelf() {
-        Instantiate(deathExplosion, transform.position, transform.rotation);
-        GetComponent<Rigidbody2D>().isKinematic = true;
-        GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
-        GetComponent<SpriteRenderer>().enabled = false;
-        Invoke("Respawn", 3); 
+        if (!dead) {
+            dead = true;
+            Instantiate(deathExplosion, transform.position, transform.rotation);
+            GetComponent<Rigidbody2D>().isKinematic = true;
+            GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+            GetComponent<SpriteRenderer>().enabled = false;
+            Invoke("Respawn", 3);
+        }
     }
 
     public bool getDeathState() {
@@ -292,7 +299,6 @@ public class PrototypePlayer : MonoBehaviour {
             } else {
                 if ((curHull -= damage) <= 0) {
                     curHull = 0;
-                    dead = true;
                     DestroySelf();
                 }
             }
@@ -301,13 +307,9 @@ public class PrototypePlayer : MonoBehaviour {
 
      public void ApplyHeat(float heat) {
         curHeat += heat;
-        /*if (curHeat > thresholdHeat) {
-            curHeat = thresholdHeat;
-        }*/
         VisualHeatEffect();
     }
 
-    // Test
     void VisualHeatEffect() {
         float colorScale = curHeat / thresholdHeat;
         GetComponent<SpriteRenderer>().color = new Color(1, 1 - 1 * colorScale, 1 - 1 * colorScale);

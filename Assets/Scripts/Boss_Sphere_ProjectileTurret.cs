@@ -24,18 +24,7 @@ public class Boss_Sphere_ProjectileTurret : MonoBehaviour {
 
     }
 
-    void FixedUpdate() {
-        /* if (isSpawned) {
-            if (player.GetComponent<Collider2D>().IsTouching(hitBox) && !player.GetComponent<PrototypePlayer>().getDeathState()) {
-                LookAtPlayer();
-                FireTurret();
-            } 
-        } */
-
-
-    }
-
-    public void hasSpawned() {
+     public void hasSpawned() {
         isSpawned = true;
         if (GetComponentInParent<Boss_Sphere>().PhaseOneLoaded()) {
             ToggleVulnerable();

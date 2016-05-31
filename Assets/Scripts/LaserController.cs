@@ -19,13 +19,14 @@ public class LaserController : MonoBehaviour {
 	//public float laser2MaxDistance; // Aux Laser
 
     private float damage;
-	//private float damage2; // Aux Laser
+    //private float damage2; // Aux Laser
 
+    private LayerMask mask = ~(1 << 8 | 1 << 2);
 
-	//public float offset; //To get the Laser to project from the vessel
+    //public float offset; //To get the Laser to project from the vessel
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         laser = Instantiate(laser);
 		//laser2 = Instantiate(laser2);
         laser.GetComponent<LineRenderer>().sortingLayerName = "Projectiles";
@@ -39,16 +40,8 @@ public class LaserController : MonoBehaviour {
         UpdateDamage();
 	}
 
-    void FixedUpdate() {
-
-
-    }
 
     void ApplyDamage(GameObject target) {
-        /* if (target.tag == "asteroid") {
-             target.SendMessage("HitDamage", damage);
-         } */
-
         switch (target.gameObject.tag) {
             case "asteroid":
                 target.transform.SendMessage("HitDamage", damage);
@@ -66,7 +59,7 @@ public class LaserController : MonoBehaviour {
                 target.gameObject.SendMessage("Explode");
                 break;
             default:
-                Debug.Log("Laser " + gameObject + " encountered object with no tag handler");
+                //Debug.Log("Laser " + gameObject + " encountered object with no tag handler");
                 break;
         }
     }
@@ -102,17 +95,10 @@ public class LaserController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        /*if (fire == true) {
-            laser.SetActive(true);
-            laser.transform.position = new Vector3 (weaponHardpoint.transform.position.x, weaponHardpoint.transform.position.y, -1);
-			laser.transform.rotation = weaponHardpoint.transform.rotation;
-		} else {
-			laser.SetActive (false);
-		}*/
-
+        
         if (fire == true) {
             laser.GetComponent<LineRenderer>().SetPosition(0, weaponHardPoint.transform.position);
-            RaycastHit2D hit = Physics2D.Raycast(weaponHardPoint.transform.position, weaponHardPoint.transform.up, laserMaxDistance);
+            RaycastHit2D hit = Physics2D.Raycast(weaponHardPoint.transform.position, weaponHardPoint.transform.up, laserMaxDistance, mask);
 
             if (hit.collider != null) {
                 laser.GetComponent<LineRenderer>().SetPosition(1, hit.point);

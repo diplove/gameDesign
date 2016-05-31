@@ -42,6 +42,7 @@ public class ProjectileController : MonoBehaviour {
         foreach (GameObject projectile in normalProjectiles) {
             if (projectile.activeInHierarchy == false) {
                 projectile.SetActive(true);
+                projectile.tag = "projectile";
                 return projectile;
             }
         }

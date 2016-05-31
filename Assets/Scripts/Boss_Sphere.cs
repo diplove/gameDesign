@@ -29,16 +29,16 @@ public class Boss_Sphere : MonoBehaviour {
     public GameObject projectileTurretPrefab;
 
     // Special
-    private GameObject camera;
-    private GameObject canvas;
+    private GameObject mainCamera;
+    private GameObject uiCanvas;
 
 
     void Start() {
         InstantiateProjectiles();
-        camera = GameObject.Find("Main Camera");
-        canvas = GameObject.Find("Canvas");
-       // camera.GetComponent<followPlayer>().SetTarget(gameObject.transform);
-       // canvas.SetActive(false);
+        mainCamera = GameObject.Find("Main Camera");
+        uiCanvas = GameObject.Find("Canvas");
+       // mainCamera.GetComponent<followPlayer>().SetTarget(gameObject.transform);
+       // uiCanvas.SetActive(false);
     }
     
 
@@ -88,14 +88,6 @@ public class Boss_Sphere : MonoBehaviour {
         }
     }
 
-    /* public void TurretDestroyed() {
-        health -= 1000;
-        if (health <= 0) {
-            Debug.Log("Sphere Phase 1 Ended");
-            battlePhase = 2;
-        }
-    } */
-
     public void TurretDestroyedTest(GameObject obj) {
         health -= 1000;
         if (health <= 0) {
@@ -136,8 +128,10 @@ public class Boss_Sphere : MonoBehaviour {
 
     void HitDamage(GameObject obj) {
         if (obj.GetComponent<NormalProjectileController>()) {
+            Debug.Log("Is hit");
             obj.GetComponent<Rigidbody2D>().velocity = obj.GetComponent<Rigidbody2D>().velocity * -0.5f; // Reflect Projectiles
             obj.transform.up = -obj.transform.up;
+            obj.tag = "enemyProjectile";
         }
     }
 
@@ -158,11 +152,11 @@ public class Boss_Sphere : MonoBehaviour {
         isSpawningInitial = true;
         foreach (GameObject obj in turrets) {
             obj.SendMessage("Spawn");
-            yield return new WaitForSeconds(5);
+            yield return new WaitForSeconds(2.5f);
         }
 
-        camera.GetComponent<followPlayer>().SetTarget(GameObject.FindGameObjectWithTag("player").transform);
-        canvas.SetActive(true);
+        mainCamera.GetComponent<followPlayer>().SetTarget(GameObject.FindGameObjectWithTag("player").transform);
+        uiCanvas.SetActive(true);
 
         yield return new WaitForSeconds(2);
         InitialTurretsActivated = true;
@@ -208,8 +202,8 @@ public class Boss_Sphere : MonoBehaviour {
     }
 
     IEnumerator TestDetatch() {
-        camera.GetComponent<followPlayer>().SetTarget(gameObject.transform);
-        canvas.SetActive(false);
+        mainCamera.GetComponent<followPlayer>().SetTarget(gameObject.transform);
+        uiCanvas.SetActive(false);
 
         yield return new WaitForSeconds(2);
 
@@ -227,8 +221,8 @@ public class Boss_Sphere : MonoBehaviour {
 
         yield return new WaitForSeconds(2);
 
-        camera.GetComponent<followPlayer>().SetTarget(GameObject.FindGameObjectWithTag("player").transform);
-        canvas.SetActive(true);
+        mainCamera.GetComponent<followPlayer>().SetTarget(GameObject.FindGameObjectWithTag("player").transform);
+        uiCanvas.SetActive(true);
         StopAllCoroutines();
     }
 

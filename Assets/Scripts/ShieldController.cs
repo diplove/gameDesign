@@ -26,11 +26,10 @@ public class ShieldController : MonoBehaviour {
 
     }
 
-    void OnTriggerEnter2D(Collider2D other) {
-        if (other.tag == "projectileNormal") {
-            transform.parent.SendMessage("HitDamage", 20); // temporary hit damage
+    void HitDamage(float damage) {
+        transform.parent.SendMessage("HitDamage", damage);
+        if (transform.parent.GetComponent<PrototypePlayer>().getCurrentShield() > 0) {
             GetComponent<Animator>().Play("hit");
-            other.gameObject.SetActive(false);
         }
     }
 }

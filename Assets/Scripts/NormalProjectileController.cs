@@ -21,22 +21,7 @@ public class NormalProjectileController : MonoBehaviour {
 		isCounting = false;
     }
 
-    void OnCollisionEnter2D(Collision2D other) {
-        /* if (other.gameObject.tag == "asteroid") {
-             Explode();
-             other.transform.SendMessage("HitDamage", damage);
-         } else if (other.gameObject.tag == "bossChild") {
-             other.gameObject.SendMessage("HitDamage", damage);
-             Explode();
-         } else if (other.gameObject.tag == "boss") {
-             other.gameObject.SendMessage("HitDamage", gameObject);
-         } else if (other.gameObject.tag == "player") {
-             other.gameObject.SendMessage("HitDamage", (int)damage);
-             Explode();
-         } else if (other.gameObject.tag != "player") {
-             Explode();
-         }   */
-
+    void OnTriggerEnter2D(Collider2D other) {
         switch (other.gameObject.tag) {
             case "asteroid":
                 Explode();
@@ -53,8 +38,11 @@ public class NormalProjectileController : MonoBehaviour {
                 other.gameObject.SendMessage("HitDamage", (int)damage);
                 Explode();
                 break;
-            case "projectile":
-                Explode();
+            case "playerChild":
+                if (gameObject.tag == "enemyProjectile") {
+                    other.gameObject.SendMessage("HitDamage", (int)damage);
+                    Explode();
+                }
                 break;
             case "enemyShip":
                 other.gameObject.SendMessage("HitDamage", damage);
@@ -63,16 +51,12 @@ public class NormalProjectileController : MonoBehaviour {
             case "enemyProjectile":
                 Explode();
                 break;
-            default:
-                Debug.Log("Projectile " + gameObject + " encountered object with no tag handler");
+            case "ignoreTrigger":
                 break;
-        }
-
-    }
-
-    void OnTriggerEnter2D(Collider2D other) {
-        if (other.gameObject.tag == "enemyProjectile") {
-            Explode();
+            default:
+                //Debug.Log("Projectile " + gameObject + " encountered object with no tag handler");
+                Explode();
+                break;
         }
     }
 
@@ -81,7 +65,7 @@ public class NormalProjectileController : MonoBehaviour {
     }
 
     void Explode() {
-        GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+        GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 		GetComponent<SpriteRenderer>().sprite = explosionSprite;
 		isCounting = true;
     }
