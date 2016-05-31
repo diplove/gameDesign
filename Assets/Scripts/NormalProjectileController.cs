@@ -53,6 +53,9 @@ public class NormalProjectileController : MonoBehaviour {
                 other.gameObject.SendMessage("HitDamage", (int)damage);
                 Explode();
                 break;
+            case "projectile":
+                Explode();
+                break;
             case "enemyShip":
                 other.gameObject.SendMessage("HitDamage", damage);
                 Explode();

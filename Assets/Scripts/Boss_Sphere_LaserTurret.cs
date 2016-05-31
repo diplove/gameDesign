@@ -7,13 +7,15 @@ public class Boss_Sphere_LaserTurret : MonoBehaviour {
     public float laserDamage;
     public Material laserMaterial;
     public GameObject laserStartPoint;
+    public GameObject turretExplosion;
 
     public float health;
 
     private LineRenderer lr;
-    private ParticleSystem ps;
+    //private ParticleSystem ps;
+    private ParticleSystem.EmissionModule em;
     private bool isSpawned = false;
-
+    private bool vulnerable = false;
     private bool firing = false;
 
 	// Use this for initialization
@@ -24,13 +26,13 @@ public class Boss_Sphere_LaserTurret : MonoBehaviour {
         lr.SetColors(Color.red, Color.red);
         lr.enabled = false;
 
-        ps = lr.GetComponent<ParticleSystem>();
-        var em = ps.emission;
+        em = laserStartPoint.GetComponent<ParticleSystem>().emission;
         em.enabled = false;
+        StartCoroutine(GetComponentInParent<Boss_Sphere>().ActivateNewTurret(gameObject)); // TESTING
     }
 	
     void FixedUpdate() {
-        if (firing) {
+        /* if (firing) {
             lr.enabled = true;
             lr.SetPosition(0, laserStartPoint.transform.position);
             RaycastHit2D hit = Physics2D.Raycast(laserStartPoint.transform.position, transform.up, laserMaxDistance);
@@ -46,23 +48,46 @@ public class Boss_Sphere_LaserTurret : MonoBehaviour {
             } else {
                 lr.SetPosition(1, laserStartPoint.transform.position + (transform.up * laserMaxDistance));
             }
-        }
+        } */
     }
 	// Update is called once per frame
 	void Update () {
-	
-	}
+        if (firing) {
+            lr.enabled = true;
+            lr.SetPosition(0, laserStartPoint.transform.position);
+            RaycastHit2D hit = Physics2D.Raycast(laserStartPoint.transform.position, transform.up, laserMaxDistance);
+
+            if (hit.collider != null) {
+                lr.SetPosition(1, hit.point);
+                if (hit.collider.gameObject.tag == "player") {
+                    hit.collider.gameObject.SendMessage("HitDamage", laserDamage);
+                } else if (hit.collider.gameObject.tag == "projectile" || hit.collider.gameObject.tag == "enemyProjectile") {
+                    hit.collider.gameObject.SendMessage("Explode");
+                }
+            } else {
+                lr.SetPosition(1, laserStartPoint.transform.position + (transform.up * laserMaxDistance));
+            }
+        }
+    }
 
     void hasSpawned() {
         isSpawned = true;
+        if (GetComponentInParent<Boss_Sphere>().PhaseOneLoaded()) {
+            ToggleVulnerable();
+        }
     }
 
     void HitDamage(float damage) {
-        if (isSpawned) {
+        if (isSpawned && vulnerable) {
             if ((health -= damage) <= 0) {
-                DestorySelf();
+                Instantiate(turretExplosion, transform.GetChild(0).position, transform.GetChild(0).rotation);
+                GetComponentInParent<Boss_Sphere>().TurretDestroyedTest(gameObject); // TESTING
             }
         }
+    }
+
+    public void ToggleVulnerable() {
+        vulnerable = !vulnerable;
     }
 
     public void Spawn() {
@@ -71,63 +96,29 @@ public class Boss_Sphere_LaserTurret : MonoBehaviour {
         }
     }
 
-    void DestorySelf() {
-        isSpawned = false;
-        DeactivateLaser();
-        GetComponentInParent<Boss_Sphere>().TurretDestroyed();
-        GetComponent<Animator>().Play("LaserTurretPreSpawn");
-        StartCoroutine(GetComponentInParent<Boss_Sphere>().ActivateNewTurret(gameObject));
-
+    void DestroySelf() {
+        Instantiate(turretExplosion, transform.position, transform.rotation);
+        Destroy(gameObject);
     }
 
-   /* IEnumerator ActivateLaser() {
-        if (firing == false) {
-            yield return (LaserCharge());
-            firing = true;
-        }    
-        lr.enabled = true;
-        lr.SetPosition(0, laserStartPoint.transform.position);
-        RaycastHit2D hit = Physics2D.Raycast(laserStartPoint.transform.position, transform.up, laserMaxDistance);
-        
-        if (hit.collider != null) {
-            lr.SetPosition(1, hit.point);
-            Debug.Log(hit.collider.gameObject);
-            if (hit.collider.gameObject.tag == "player") {
-                hit.collider.gameObject.SendMessage("HitDamage", laserDamage);
-            } else if (hit.collider.gameObject.tag == "projectile") {
-                hit.collider.gameObject.SendMessage("Explode");
-            }
-        } else {
-            lr.SetPosition(1, laserStartPoint.transform.position + (transform.up * laserMaxDistance));
-        }
-        yield return null;
-    } */
-
-    void DeactivateLaser() {
+    public void DeactivateLaser() {
         firing = false;
         lr.enabled = false;
-        var em = ps.emission;
         em.enabled = false;
     }
 
-    /* IEnumerator LaserCharge() {
-        Debug.Log("Particles Charge");
-        var em = ps.emission;
-        em.enabled = true;
-        yield return new WaitForSeconds(5);
-    } */
-
-    void ActivateLaser() {
+    public void ActivateLaser() {
         if (firing == false) {
             StartCoroutine(LaserCharge());
-            firing = true;
         }
     }
 
     IEnumerator LaserCharge() {
-        Debug.Log("Laser Charging");
-        var em = ps.emission;
+        while (!isSpawned && !vulnerable) {
+            yield return new WaitForSeconds(1);
+        }
         em.enabled = true;
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(3);
+        firing = true;
     }
 }
