@@ -9,6 +9,12 @@ public class AsteroidScript : MonoBehaviour {
     public float health;
     private float defaultHealth = 100;
 
+    //Reference to next asteroid
+    public GameObject childAsteroid;
+
+    //Number of child asteroids to spawn
+    public int noChildAsteroids = 2;
+
     void Start() {
         if (health == 0) {
             health = defaultHealth;
@@ -19,7 +25,7 @@ public class AsteroidScript : MonoBehaviour {
         float x = Random.Range(-1f, 1f);
         float y = Random.Range(-1f, 1f);
 
-        rb2d.AddForce(magnitude * new Vector2(x, y));
+        rb2d.AddForce(magnitude * new Vector3(x, y));
 
         float torque = Random.Range(MinTorque, MaxTorque);
         rb2d.AddTorque(torque);
@@ -44,6 +50,14 @@ public class AsteroidScript : MonoBehaviour {
         health -= damage;
         if (health <= 0) {
             DestroySelf();
+
+            if (childAsteroid != null)
+            {
+                for (int i = 0; i < noChildAsteroids; i++)
+                {
+                    Instantiate(childAsteroid, transform.position, new Quaternion());
+                }
+            }
         }
     }
 
