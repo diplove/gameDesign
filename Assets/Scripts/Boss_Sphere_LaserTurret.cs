@@ -11,6 +11,8 @@ public class Boss_Sphere_LaserTurret : MonoBehaviour {
 
     public float health;
 
+    private LayerMask mask = ~(1 << 8 | 1 << 2);
+
     private LineRenderer lr;
     //private ParticleSystem ps;
     private ParticleSystem.EmissionModule em;
@@ -36,7 +38,7 @@ public class Boss_Sphere_LaserTurret : MonoBehaviour {
         if (firing) {
             lr.enabled = true;
             lr.SetPosition(0, laserStartPoint.transform.position);
-            RaycastHit2D hit = Physics2D.Raycast(laserStartPoint.transform.position, transform.up, laserMaxDistance);
+            RaycastHit2D hit = Physics2D.Raycast(laserStartPoint.transform.position, transform.up, laserMaxDistance, mask);
 
             if (hit.collider != null) {
                 if (hit.collider.gameObject.tag == "player") {

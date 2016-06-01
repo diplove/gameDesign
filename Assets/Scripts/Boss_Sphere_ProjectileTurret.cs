@@ -10,12 +10,18 @@ public class Boss_Sphere_ProjectileTurret : MonoBehaviour {
 
     private Transform player;
 
+
+
     public float projectileSpeed;
     public float timeBetweenSteps;
     private float lastStep;
     private bool isSpawned = false;
     private bool vulnerable = false;
     public float health;
+    public float maxShotsBeforeCooldown = 15f;
+    public float cooldownTime = 3f;
+    private bool cooldownPeriod = false;
+    private float shotCount = 0f;
 
  
 	void Start () {
@@ -66,7 +72,7 @@ public class Boss_Sphere_ProjectileTurret : MonoBehaviour {
     } 
 
     void FireTurret() {
-        if (Time.time - lastStep > timeBetweenSteps) {
+        if (Time.time - lastStep > timeBetweenSteps && !cooldownPeriod) {
             GameObject p1 = GetComponentInParent<Boss_Sphere>().getProjectile();
             GameObject p2 = GetComponentInParent<Boss_Sphere>().getProjectile();
             p1.transform.position = shootPoints[0].transform.position;
@@ -76,7 +82,17 @@ public class Boss_Sphere_ProjectileTurret : MonoBehaviour {
             p1.GetComponent<Rigidbody2D>().AddForce(p1.transform.up * projectileSpeed);
             p2.GetComponent<Rigidbody2D>().AddForce(p2.transform.up * projectileSpeed);
             lastStep = Time.time;
+            if (shotCount++ >= maxShotsBeforeCooldown) {
+                cooldownPeriod = true;
+                StartCoroutine(turretCooldown());
+            }
         }
+    }
+
+    IEnumerator turretCooldown() {
+        yield return new WaitForSeconds(cooldownTime);
+        cooldownPeriod = false;
+        shotCount = 0;
     }
 
     void LookAtPlayer() {

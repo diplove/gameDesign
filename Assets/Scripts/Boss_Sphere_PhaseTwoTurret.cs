@@ -19,7 +19,6 @@ public class Boss_Sphere_PhaseTwoTurret : MonoBehaviour {
 
     void Start() {
         player = GameObject.FindGameObjectWithTag("player").transform;
-        //gameObject.GetComponent<Animator>().Play("BossProjectileTurretPreSpawn");
     }
 
     public void hasSpawned() {
@@ -45,7 +44,7 @@ public class Boss_Sphere_PhaseTwoTurret : MonoBehaviour {
     void HitDamage(float damage) {
         if (isSpawned && vulnerable) {
             if ((health -= damage) < 0) {
-                Instantiate(turretExplosion, transform.position, transform.rotation);
+                DestroySelf();
             }
         }
     }

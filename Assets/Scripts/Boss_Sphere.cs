@@ -4,14 +4,16 @@ using System.Collections.Generic;
 
 public class Boss_Sphere : MonoBehaviour {
 
+    private GameObject Controller;
+
+
     public float outerRotationSpeed;
     public float maxOuterRotationSpeed;
     public int numberOfProjectiles;
     public float projectileDamage;
-    public float health;
 
     private List<GameObject> bossProjectiles = new List<GameObject>();
-    private int battlePhase = 1;
+    private int battlePhase = 0;
 
 
 
@@ -28,17 +30,10 @@ public class Boss_Sphere : MonoBehaviour {
     public GameObject laserTurretPrefab;
     public GameObject projectileTurretPrefab;
 
-    // Special
-    private GameObject mainCamera;
-    private GameObject uiCanvas;
-
 
     void Start() {
         InstantiateProjectiles();
-        mainCamera = GameObject.Find("Main Camera");
-        uiCanvas = GameObject.Find("Canvas");
-       // mainCamera.GetComponent<followPlayer>().SetTarget(gameObject.transform);
-       // uiCanvas.SetActive(false);
+        Controller = GameObject.Find("Boss_Sphere_Controller");
     }
     
 
@@ -60,6 +55,11 @@ public class Boss_Sphere : MonoBehaviour {
         } else {
 
         }
+    }
+
+    public IEnumerator StartBattle() {
+        yield return new WaitForSeconds(2);
+        battlePhase = 1;
     }
 
     public IEnumerator PhaseOneEvents() {
@@ -89,13 +89,8 @@ public class Boss_Sphere : MonoBehaviour {
     }
 
     public void TurretDestroyedTest(GameObject obj) {
-        health -= 1000;
-        if (health <= 0) {
-            battlePhase = 2;
-            ChangeToPhaseTwo();
-        } else {
-            RespawnTurret(obj);
-        }
+            Controller.SendMessage("HitDamage", 1000f);
+            RespawnTurret(obj);        
     }
 
     void RespawnTurret(GameObject obj) {
@@ -123,7 +118,7 @@ public class Boss_Sphere : MonoBehaviour {
     
 
     public bool PhaseOneLoaded() {
-        return InitialTurretsActivated;
+                return InitialTurretsActivated;
     }
 
     void HitDamage(GameObject obj) {
@@ -155,14 +150,12 @@ public class Boss_Sphere : MonoBehaviour {
             yield return new WaitForSeconds(2.5f);
         }
 
-        mainCamera.GetComponent<followPlayer>().SetTarget(GameObject.FindGameObjectWithTag("player").transform);
-        uiCanvas.SetActive(true);
-
         yield return new WaitForSeconds(2);
         InitialTurretsActivated = true;
         foreach (GameObject obj in turrets) {
             obj.SendMessage("ToggleVulnerable");
         }
+        Controller.GetComponent<Boss_Sphere_MainController>().PhaseOneLoadComplete();
 
     }
 
@@ -191,20 +184,20 @@ public class Boss_Sphere : MonoBehaviour {
         return newProj;
     }
 
-    void ChangeToPhaseTwo() {
+    public void ChangeToPhaseTwo() {
         StopAllCoroutines();
-        DeactivateLaserTurrets();    
+        DeactivateLaserTurrets();
+        foreach(GameObject obj in bossProjectiles) {
+            Destroy(obj);
+        } 
         
         foreach(GameObject obj in turrets) {
             obj.SendMessage("ToggleVulnerable");
         }
-        StartCoroutine(TestDetatch());
+        StartCoroutine(DetatchTurrets());
     }
 
-    IEnumerator TestDetatch() {
-        mainCamera.GetComponent<followPlayer>().SetTarget(gameObject.transform);
-        uiCanvas.SetActive(false);
-
+    IEnumerator DetatchTurrets() {
         yield return new WaitForSeconds(2);
 
         foreach (GameObject obj in turrets) {
@@ -218,12 +211,8 @@ public class Boss_Sphere : MonoBehaviour {
         foreach (GameObject obj in turrets) {
             obj.SendMessage("DestroySelf");
         }
-
-        yield return new WaitForSeconds(2);
-
-        mainCamera.GetComponent<followPlayer>().SetTarget(GameObject.FindGameObjectWithTag("player").transform);
-        uiCanvas.SetActive(true);
         StopAllCoroutines();
+        Controller.GetComponent<Boss_Sphere_MainController>().PhaseOneFinished();
     }
 
 

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class Boss_Sphere_PhaseTwo : MonoBehaviour {
 
+    private GameObject Controller;
+
     public float health;
     public GameObject PhaseTwoCentreExplosionPoints;
     public GameObject PhaseTwoCentreExplosionPrefab;
@@ -12,6 +14,8 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     public Material MegaLaserMaterial;
 
     // Mega Laser
+    private LayerMask mask = ~(1 << 8 | 1 << 2);
+
     public float megaLaserDamage;
     public float megaLaserMaxDistance;
 
@@ -20,8 +24,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     private LineRenderer sidelr;
     private bool laserFiringLeft = false;
     private bool laserFiringRight = false;
-    private bool turningLeft = false;
-    private bool turningRight = false;
+    private bool laserRotating = false;
     public float laserTime = 15f;
     private float rotationAmount;
 
@@ -34,10 +37,10 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     // State
     private bool leftSideRotated = false;
     private bool rightSideRotated = false;
-    private bool normalMode = false;
     private bool initialSpawnCompleted = false;
     private bool PhaseTwoEventsRunning = false;
     private bool initialSpawning = false;
+    private bool normalMode = false;
 
     // Generators
     public GameObject GeneratorOneTop;
@@ -94,12 +97,38 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
 
         rotationAmount = 360f / laserTime;
 
-        
+        Controller = GameObject.Find("Boss_Sphere_Controller");
 
         InstantiateProjectiles();
 
         OpeningExplosion();
 	}
+
+    public void DestroySelf() {
+        Destroy(gameObject);
+    }
+
+    public void GeneratorHit(GameObject obj, float damage) {
+        if (obj == MegaLaserLeftPoint) {
+            if ((GeneratorOneHealth -= damage) <= 0) {
+                GeneratorOneOnline = false;
+                GeneratorCoreOne.SetActive(false);
+                GeneratorOneTop.SetActive(false);
+                GeneratorOneBottom.SetActive(false);
+                obj.SendMessage("DestorySelf");
+                Controller.SendMessage("HitDamage", 1000);
+            }
+        } else if (obj == MegaLaserRightPoint) {
+            if ((GeneratorTwoHealth -= damage) <= 0) {
+                GeneratorTwoOnline = false;
+                GeneratorCoreTwo.SetActive(false);
+                GeneratorTwoTop.SetActive(false);
+                GeneratorTwoBottom.SetActive(false);
+                obj.SendMessage("DestorySelf");
+                Controller.SendMessage("HitDamage", 1000);
+            }
+        }
+    }
 
     void FixedUpdate() {
         if (!initialSpawnCompleted && !initialSpawning) {
@@ -108,9 +137,8 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         if (!PhaseTwoEventsRunning && initialSpawnCompleted) {
             StartCoroutine(PhaseTwoEvents());
         }
-        if (turningLeft) {
-            transform.Rotate(Vector3.forward, -rotationAmount * Time.deltaTime);
-        } else if (turningRight) {
+        
+        if (laserRotating && (GeneratorOneOnline || GeneratorTwoOnline)) { 
             transform.Rotate(Vector3.forward, rotationAmount * Time.deltaTime);
         }
     }
@@ -131,8 +159,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     public void TriggerStartSequence() {
         initialSpawning = true;
         StartCoroutine(ActivateTurrets());
-        SpawnCores();
-        normalMode = true;
+
     }
 
     void SpawnCores() {
@@ -149,24 +176,40 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
             obj.SendMessage("Spawn");
         }
 
-        yield return new WaitForSeconds(5);
-
+        yield return new WaitForSeconds(3);
+        Controller.GetComponent<Boss_Sphere_MainController>().PhaseTwoLoadComplete();
+        yield return new WaitForSeconds(2);
+        SpawnCores();
         foreach (GameObject obj in turrets) {
             obj.SendMessage("ToggleVulnerable");
         }
         yield return new WaitForSeconds(2);
         initialSpawnCompleted = true;
+
     }
 
     IEnumerator PhaseTwoEvents() {
 
             PhaseTwoEventsRunning = true;
+        if (normalMode == true) {
+            rotationAmount = (Random.value <= 0.5f) ? +rotationAmount : -rotationAmount;
             if (!GeneratorOneOnline) {
                 StartCoroutine(LaserChargeRight());
             } else if (!GeneratorTwoOnline) {
                 StartCoroutine(LaserChargeLeft());
-            } else if (Random.value < 0.25f) {
-                if (Random.value < 0.5f) {
+            } else if (Random.value < 0.5f) {
+                StartCoroutine(LaserChargeLeft());
+            } else {
+                StartCoroutine(LaserChargeRight());
+            }
+            normalMode = false;
+        } else if (Random.value < 0.25f) {
+                 rotationAmount = (Random.value <= 0.5f) ? +rotationAmount : -rotationAmount;
+                if (!GeneratorOneOnline) {
+                StartCoroutine(LaserChargeRight());
+                } else if (!GeneratorTwoOnline) {
+                StartCoroutine(LaserChargeLeft());
+                } else if (Random.value < 0.5f) {
                     StartCoroutine(LaserChargeLeft());
                 } else {
                     StartCoroutine(LaserChargeRight());
@@ -174,15 +217,14 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
             } else {
                 StartCoroutine(NormalState());
             }
-
-            //yield return new WaitUntil(() => !laserFiringLeft && !laserFiringRight);
             yield return new WaitForSeconds(Random.Range(5f, 10f));
         }
     
 
     IEnumerator NormalState() {
             PhaseTwoEventsRunning = true;
-            yield return new WaitForSeconds(20);
+        normalMode = true;
+            yield return new WaitForSeconds(10f);
             PhaseTwoEventsRunning = false;
         }
 
@@ -195,10 +237,10 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
             yield return new WaitForSeconds(1);
         }
         laserFiringLeft = true;
-        turningLeft = true;
+        laserRotating = true;
 
         yield return new WaitForSeconds(laserTime); // Before mega laser stops
-        turningLeft = false;
+        laserRotating = false;
         laserFiringLeft = false;
         leftEm.enabled = false;
         megaLeftlr.enabled = false;
@@ -220,10 +262,10 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
             yield return new WaitForSeconds(1);
         }
         laserFiringRight = true;
-        turningRight = true;
+        laserRotating = true;
 
         yield return new WaitForSeconds(laserTime); // Before mega laser stops
-        turningRight = false;
+        laserRotating = false;
 
         laserFiringRight = false;
         rightEm.enabled = false;
@@ -237,11 +279,11 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         PhaseTwoEventsRunning = false;
     }
 
-    public void ToggleLeftRotated() {
+    public void ToggleLeftRotated() { // Called by rotation animation
         leftSideRotated = !leftSideRotated;
     }
 
-    public void ToggleRightRotated() {
+    public void ToggleRightRotated() { // Called by rotation animation
         rightSideRotated = !rightSideRotated;
     }
 
@@ -261,7 +303,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
             float laserMaterialTiling = MegaLaserMaterial.mainTextureOffset.x - 0.005f;
             MegaLaserMaterial.mainTextureOffset = new Vector2(laserMaterialTiling, 1);
             sidelr.SetPosition(0, side.transform.position);
-            RaycastHit2D hit = Physics2D.Raycast(side.transform.position, direction, megaLaserMaxDistance);
+            RaycastHit2D hit = Physics2D.Raycast(side.transform.position, direction, megaLaserMaxDistance, mask);
 
             if (hit.collider != null) {
                 if (hit.collider.gameObject.tag == "player") {

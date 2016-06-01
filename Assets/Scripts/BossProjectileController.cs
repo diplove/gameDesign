@@ -61,7 +61,11 @@ public class BossProjectileController : MonoBehaviour {
     }
 
     void UpdateDamage() {
-        damage = FindObjectOfType<Boss_Sphere>().projectileDamage;
+        if (FindObjectOfType<Boss_Sphere>()) {
+            damage = FindObjectOfType<Boss_Sphere>().projectileDamage;
+        } else if (FindObjectOfType<Boss_Sphere_PhaseTwo>()) {
+            damage = FindObjectOfType<Boss_Sphere_PhaseTwo>().projectileDamage;
+        }
     }
 
     void Explode() {
