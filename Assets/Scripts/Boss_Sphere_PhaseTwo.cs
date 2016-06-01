@@ -20,6 +20,10 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     private LineRenderer sidelr;
     private bool laserFiringLeft = false;
     private bool laserFiringRight = false;
+    private bool turningLeft = false;
+    private bool turningRight = false;
+    public float laserTime = 15f;
+    private float rotationAmount;
 
     private ParticleSystem.EmissionModule leftEm;
     private ParticleSystem.EmissionModule rightEm;
@@ -88,6 +92,8 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         GeneratorOneHealth = GeneratorHealth;
         GeneratorTwoHealth = GeneratorHealth;
 
+        rotationAmount = 360f / laserTime;
+
         
 
         InstantiateProjectiles();
@@ -101,6 +107,11 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         }
         if (!PhaseTwoEventsRunning && initialSpawnCompleted) {
             StartCoroutine(PhaseTwoEvents());
+        }
+        if (turningLeft) {
+            transform.Rotate(Vector3.forward, -rotationAmount * Time.deltaTime);
+        } else if (turningRight) {
+            transform.Rotate(Vector3.forward, rotationAmount * Time.deltaTime);
         }
     }
 	
@@ -121,6 +132,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         initialSpawning = true;
         StartCoroutine(ActivateTurrets());
         SpawnCores();
+        normalMode = true;
     }
 
     void SpawnCores() {
@@ -147,19 +159,32 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     }
 
     IEnumerator PhaseTwoEvents() {
-        PhaseTwoEventsRunning = true;
-        if (!GeneratorOneOnline) {
-            StartCoroutine(LaserChargeRight());
-        } else if (!GeneratorTwoOnline) {
-            StartCoroutine(LaserChargeLeft());
-        } else if (Random.value < 0.5f) {
-            StartCoroutine(LaserChargeLeft());
-        } else {
-            StartCoroutine(LaserChargeRight());
+
+            PhaseTwoEventsRunning = true;
+            if (!GeneratorOneOnline) {
+                StartCoroutine(LaserChargeRight());
+            } else if (!GeneratorTwoOnline) {
+                StartCoroutine(LaserChargeLeft());
+            } else if (Random.value < 0.25f) {
+                if (Random.value < 0.5f) {
+                    StartCoroutine(LaserChargeLeft());
+                } else {
+                    StartCoroutine(LaserChargeRight());
+                }
+            } else {
+                StartCoroutine(NormalState());
+            }
+
+            //yield return new WaitUntil(() => !laserFiringLeft && !laserFiringRight);
+            yield return new WaitForSeconds(Random.Range(5f, 10f));
         }
-        //yield return new WaitUntil(() => !laserFiringLeft && !laserFiringRight);
-        yield return new WaitForSeconds(Random.Range(5f, 10f));
-    }
+    
+
+    IEnumerator NormalState() {
+            PhaseTwoEventsRunning = true;
+            yield return new WaitForSeconds(20);
+            PhaseTwoEventsRunning = false;
+        }
 
     IEnumerator LaserChargeLeft() {
         GeneratorOne.enabled = false;
@@ -170,9 +195,10 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
             yield return new WaitForSeconds(1);
         }
         laserFiringLeft = true;
+        turningLeft = true;
 
-        yield return new WaitForSeconds(10); // Before mega laser stops
-
+        yield return new WaitForSeconds(laserTime); // Before mega laser stops
+        turningLeft = false;
         laserFiringLeft = false;
         leftEm.enabled = false;
         megaLeftlr.enabled = false;
@@ -194,8 +220,10 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
             yield return new WaitForSeconds(1);
         }
         laserFiringRight = true;
+        turningRight = true;
 
-        yield return new WaitForSeconds(10); // Before mega laser stops
+        yield return new WaitForSeconds(laserTime); // Before mega laser stops
+        turningRight = false;
 
         laserFiringRight = false;
         rightEm.enabled = false;
@@ -204,6 +232,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         while (rightSideRotated) {
             yield return new WaitForSeconds(1);
         }
+        GeneratorCoreOne.SetActive(true);
         GeneratorTwo.enabled = true;
         PhaseTwoEventsRunning = false;
     }
@@ -246,48 +275,6 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
                 sidelr.SetPosition(1, side.transform.position + (direction * megaLaserMaxDistance));
             }
         } 
-
-
-
-        /* if (laserFiringLeft) {            
-            megalr.enabled = true;
-            float laserMaterialTiling = MegaLaserMaterial.mainTextureOffset.x - 0.005f;
-            MegaLaserMaterial.mainTextureOffset = new Vector2(laserMaterialTiling, 1);
-            megalr.SetPosition(0, MegaLaserLeftPoint.transform.position);
-            RaycastHit2D hit = Physics2D.Raycast(MegaLaserLeftPoint.transform.position, -transform.right, megaLaserMaxDistance);
-
-            if (hit.collider != null) {
-                if (hit.collider.gameObject.tag == "player") {
-                    megalr.SetPosition(1, MegaLaserLeftPoint.transform.position + (-transform.right * megaLaserMaxDistance));
-                    hit.collider.gameObject.SendMessage("HitDamage", megaLaserDamage);
-                } else if (hit.collider.gameObject.tag == "projectile" || hit.collider.gameObject.tag == "enemyProjectile") {
-                    megalr.SetPosition(1, MegaLaserLeftPoint.transform.position + (-transform.right * megaLaserMaxDistance));
-                    hit.collider.gameObject.SendMessage("Explode");
-                }
-            } else {
-                megalr.SetPosition(1, MegaLaserLeftPoint.transform.position + (-transform.right * megaLaserMaxDistance));
-            }
-        } else if (laserFiringRight) {
-            megalr.enabled = true;
-            float laserMaterialTiling = MegaLaserMaterial.mainTextureOffset.x - 0.005f;
-            MegaLaserMaterial.mainTextureOffset = new Vector2(laserMaterialTiling, 1);
-            megalr.SetPosition(0, MegaLaserRightPoint.transform.position);
-            RaycastHit2D hit = Physics2D.Raycast(MegaLaserRightPoint.transform.position, -transform.right, megaLaserMaxDistance);
-
-            if (hit.collider != null) {
-                if (hit.collider.gameObject.tag == "player") {
-                    megalr.SetPosition(1, MegaLaserRightPoint.transform.position + (-transform.right * megaLaserMaxDistance));
-                    hit.collider.gameObject.SendMessage("HitDamage", megaLaserDamage);
-                } else if (hit.collider.gameObject.tag == "projectile" || hit.collider.gameObject.tag == "enemyProjectile") {
-                    megalr.SetPosition(1, MegaLaserRightPoint.transform.position + (-transform.right * megaLaserMaxDistance));
-                    hit.collider.gameObject.SendMessage("Explode");
-                }
-            } else {
-                megalr.SetPosition(1, MegaLaserRightPoint.transform.position + (-transform.right * megaLaserMaxDistance));
-            }
-        } */
-
-        //transform.Rotate(Vector3.forward, 5 * Time.deltaTime);
     }
 
     void InstantiateProjectiles() {
