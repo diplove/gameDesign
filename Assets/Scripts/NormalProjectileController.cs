@@ -22,7 +22,6 @@ public class NormalProjectileController : MonoBehaviour {
     }
 
     void OnTriggerEnter2D(Collider2D other) {
-        Debug.Log(other.gameObject);
         switch (other.gameObject.tag) {
             case "asteroid":
                 Explode();

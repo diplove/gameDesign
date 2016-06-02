@@ -7,6 +7,7 @@ public class EnemyShipScript : MonoBehaviour
     public float MaxForce = 40f;
     public float DirectionChangeInterval = 1f;
     public float ShotInterval = 1f;
+    public float ShotDamage = 10f;
 
     private GameObject vessel;
     private float directionChangeInterval;
@@ -111,13 +112,9 @@ public class EnemyShipScript : MonoBehaviour
 
     void Shoot()
     {
-        //vessel = UnityEngine.GameObject.FindGameObjectWithTag("player");
-        GetComponent<ProjectileController>().shootNormalProjectile();
-        //float angle = (Mathf.Atan2(
-        //vessel.transform.position.y - transform.position.y,
-        //vessel.transform.position.x - transform.position.x) - Mathf.PI / 2) * Mathf.Rad2Deg;
 
-        //Instantiate(EnemyShipBullet, transform.position, Quaternion.Euler(new Vector3(0f, 0f, angle)));
+        GetComponent<ProjectileController>().shootNormalProjectile();
+
     }
 
     void OnCollisionEnter2D(Collision2D collider)

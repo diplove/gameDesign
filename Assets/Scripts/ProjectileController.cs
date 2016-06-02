@@ -33,6 +33,10 @@ public class ProjectileController : MonoBehaviour {
             GameObject np = Instantiate(normalProjectile);
             np.SetActive(false);
             normalProjectiles.Add(np);
+            if (gameObject.tag == "enemyShip")
+            {
+                np.GetComponent<NormalProjectileController>().setDamage(GetComponent<EnemyShipScript>().ShotDamage);
+            }
 
         }	
 	}
@@ -42,13 +46,24 @@ public class ProjectileController : MonoBehaviour {
         foreach (GameObject projectile in normalProjectiles) {
             if (projectile.activeInHierarchy == false) {
                 projectile.SetActive(true);
-                projectile.tag = "projectile";
+                if (gameObject.tag == "player")
+                {
+                    projectile.tag = "projectile";
+                } else if (gameObject.tag == "enemyShip")
+                {
+                    projectile.tag = "enemyProjectile";
+                }
                 return projectile;
             }
         }
         // If there are no avaliable inactive projectiles, make a new one. - Dynamic
         GameObject np = Instantiate(normalProjectile);
         normalProjectiles.Add(np);
+        if (gameObject.tag == "enemyShip")
+        {
+            np.GetComponent<NormalProjectileController>().setDamage(GetComponent<EnemyShipScript>().ShotDamage);
+        }
+
         return np;
     }
 
