@@ -5,8 +5,8 @@ using System.Collections.Generic;
 public class PlanetGravity : MonoBehaviour {
 
     //public CircleCollider2D planetPhysicalCollider;
-    public float mass;
-    public float gravConstant;
+    public float mass = 5f;
+    public float gravConstant = 10f;
     public float gravityFieldSizeMultiplier = 10f;
 
     private CircleCollider2D planetPhysicalCollider;

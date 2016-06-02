@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class SunHeatController : MonoBehaviour {
 
-    public float starMaxHeat;
+    public float starMaxHeat = 40f;
     private List<Transform> heatedObjects = new List<Transform>();
 
     private float heatSum;
