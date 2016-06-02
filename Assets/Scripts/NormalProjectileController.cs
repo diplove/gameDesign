@@ -11,6 +11,10 @@ public class NormalProjectileController : MonoBehaviour {
 
     public float damage;
 
+    //Audio
+    private GameObject audioObject;
+    private AudioController ac;
+
     void FixedUpdate() {
 
     }
@@ -19,6 +23,9 @@ public class NormalProjectileController : MonoBehaviour {
         //UpdateDamage();
 		countDown = 5;
 		isCounting = false;
+
+        audioObject = GameObject.Find("Audio");
+        ac = audioObject.GetComponent<AudioController>();
     }
 
     void OnTriggerEnter2D(Collider2D other) {
@@ -47,10 +54,11 @@ public class NormalProjectileController : MonoBehaviour {
             case "enemyShip":
                 other.gameObject.SendMessage("HitDamage", damage);
                 Explode();
+
                 break;
 			case "enemyTurret":
 				other.gameObject.SendMessage("HitDamage", damage);
-				Explode();
+                Explode();
 				break;
             case "enemyProjectile":
                 Explode();

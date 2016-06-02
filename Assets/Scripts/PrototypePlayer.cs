@@ -97,10 +97,13 @@ public class PrototypePlayer : MonoBehaviour {
     public GameObject deathExplosion;
     private bool dead = false;
 
-    
+    //Audio
+    private GameObject audioObject;
+    private AudioController ac;
 
-	// Use this for initialization
-	void Start () {
+
+    // Use this for initialization
+    void Start () {
 	rb = GetComponent<Rigidbody2D>();
         rotation = transform.rotation.eulerAngles;
 
@@ -108,6 +111,10 @@ public class PrototypePlayer : MonoBehaviour {
         curShield = maxShield; // Current shield is initialised to the max value
         curBatt = maxBatt;
         curHeat = 0;
+
+        audioObject = GameObject.Find("Audio");
+        ac = audioObject.GetComponent<AudioController>();
+
 
         UpdatePrimaryWeapon();
 		UpdateAuxiliaryWeapon();
@@ -130,8 +137,15 @@ public class PrototypePlayer : MonoBehaviour {
     {
         //Controls
         if (Input.GetKey(KeyCode.UpArrow))
-        {
+        {           
             Accelerate();
+            ac.playThrust();
+           
+        }
+        if (Input.GetKeyUp("up"))
+        {
+            ac.fadeThrust();
+           
         }
         if (Input.GetKey(KeyCode.DownArrow))
         {
@@ -271,6 +285,7 @@ public class PrototypePlayer : MonoBehaviour {
 
     public void DestroySelf() {
         if (!dead) {
+            ac.playDeath();
             dead = true;
             Instantiate(deathExplosion, transform.position, transform.rotation);
             GetComponent<Rigidbody2D>().isKinematic = true;
@@ -289,6 +304,7 @@ public class PrototypePlayer : MonoBehaviour {
         //Debug.Log("Getting hit for: " + damage);
         if (!dead) {
             if (curShield > 0) {
+                
                 if (curShield - damage <= 0) {
                     int diff = damage - curShield;
                     curShield = 0;
@@ -297,9 +313,15 @@ public class PrototypePlayer : MonoBehaviour {
                     curShield -= damage;
                 }
                 shield.GetComponent<Animator>().Play("hit");
+
+                ac.playShieldHit();
+
+
             } else {
+                ac.playHullHit();
                 if ((curHull -= damage) <= 0) {
                     curHull = 0;
+
                     DestroySelf();
                 }
             }
@@ -337,9 +359,14 @@ public class PrototypePlayer : MonoBehaviour {
 			curBatt -= primCost;
 			if (primType == 0) {
 				GetComponent<ProjectileController> ().shootNormalProjectile ();
-			} else {
+
+                ac.playShootProjectile();
+            } else {
 				GetComponent<LaserController> ().activateLaser ();
-			} 
+
+                ac.playShootLaserPulse();
+
+            } 
             ApplyHeat(primHeat);
             lastPrimStep = Time.time;
 		} else {
@@ -364,7 +391,9 @@ public class PrototypePlayer : MonoBehaviour {
 				GetComponent<Projectile2Controller> ().shootNormalProjectile ();
 			} else {
 				GetComponent<Laser2Controller> ().activateLaser ();
-			} 
+                ac.playShootLaser();
+                
+            } 
 			ApplyHeat(auxHeat);
 			lastAuxStep = Time.time;
 		} else {
@@ -375,7 +404,8 @@ public class PrototypePlayer : MonoBehaviour {
 	void StopAux() {
 		if (auxType == 1) {
 			GetComponent<Laser2Controller> ().deactivateLaser ();
-		}
+            ac.fadeShootLaser();
+        }
 	}
 
 	void ToggleSupport() {

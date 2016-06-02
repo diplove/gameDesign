@@ -8,12 +8,17 @@ public class SupportSystemLockOn : MonoBehaviour {
     private Rigidbody2D lockedOnTarget;
     private PrototypePlayer vessel;
 
+    //Audio
+    private GameObject audioObject;
+    private AudioController ac;
 
     // Use this for initialization
     void Start () {
         lockOnMarker = GameObject.Find("LockOnTarget");
         vessel = GetComponent<PrototypePlayer>();
 
+        audioObject = GameObject.Find("Audio");
+        ac = audioObject.GetComponent<AudioController>();
 
         lockedOn = false;
         lockOnMarker.SetActive(false);
@@ -26,6 +31,7 @@ public class SupportSystemLockOn : MonoBehaviour {
         {
             lockOnMarker.SetActive(true);
             Scan();
+            
         }
         else if (Input.GetKeyDown("a") && lockedOn)
         {
@@ -57,6 +63,10 @@ public class SupportSystemLockOn : MonoBehaviour {
                         lockedOnTarget = target;
                         lockedOn = true;
                         vessel.ApplyHeat(50);
+
+                        ac.playLockOn();
+
+
                     }
                     else
                         lockOnMarker.SetActive(false);

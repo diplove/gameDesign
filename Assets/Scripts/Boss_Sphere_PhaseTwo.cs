@@ -69,6 +69,10 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     public int numberOfProjectiles;
     public float projectileDamage;
 
+    //Audio
+    private GameObject audioObject;
+    private AudioController ac;
+
 
     private List<GameObject> bossProjectiles = new List<GameObject>();
 
@@ -98,6 +102,9 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         rotationAmount = 360f / laserTime;
 
         Controller = GameObject.Find("Boss_Sphere_Controller");
+
+        audioObject = GameObject.Find("Audio");
+        ac = audioObject.GetComponent<AudioController>();
 
         InstantiateProjectiles();
 
@@ -289,6 +296,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     }
 
     void MegaLaser() {
+        ac.playMegaLaser();
         if (laserFiringLeft) {
             direction = -transform.right;
             side = MegaLaserLeftPoint;
