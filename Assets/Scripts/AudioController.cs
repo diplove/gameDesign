@@ -101,6 +101,7 @@ public class AudioController : MonoBehaviour
 
     public void playMegaLaser()
     {
-        megaLaser.Play();
+        if (!megaLaser.isPlaying)
+            megaLaser.Play();
     }
 }

@@ -296,7 +296,6 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     }
 
     void MegaLaser() {
-        ac.playMegaLaser();
         if (laserFiringLeft) {
             direction = -transform.right;
             side = MegaLaserLeftPoint;
@@ -313,6 +312,8 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
             MegaLaserMaterial.mainTextureOffset = new Vector2(laserMaterialTiling, 1);
             sidelr.SetPosition(0, side.transform.position);
             RaycastHit2D hit = Physics2D.Raycast(side.transform.position, direction, megaLaserMaxDistance, mask);
+
+            ac.playMegaLaser();
 
             if (hit.collider != null) {
                 if (hit.collider.gameObject.tag == "player") {
