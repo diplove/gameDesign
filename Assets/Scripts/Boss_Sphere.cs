@@ -89,7 +89,7 @@ public class Boss_Sphere : MonoBehaviour {
     }
 
     public void TurretDestroyedTest(GameObject obj) {
-            Controller.SendMessage("HitDamage", 1000f);
+            Controller.SendMessage("HitDamage", 2000f);
             RespawnTurret(obj);        
     }
 
@@ -151,11 +151,13 @@ public class Boss_Sphere : MonoBehaviour {
         }
 
         yield return new WaitForSeconds(2);
+        Controller.GetComponent<Boss_Sphere_MainController>().PhaseOneLoadComplete();
+        yield return new WaitForSeconds(1);
         InitialTurretsActivated = true;
         foreach (GameObject obj in turrets) {
             obj.SendMessage("ToggleVulnerable");
         }
-        Controller.GetComponent<Boss_Sphere_MainController>().PhaseOneLoadComplete();
+        
 
     }
 

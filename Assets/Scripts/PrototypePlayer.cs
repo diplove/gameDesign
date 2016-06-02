@@ -286,6 +286,7 @@ public class PrototypePlayer : MonoBehaviour {
 
     // Method called for dealing damage to vessel
     public void HitDamage(int damage) {
+        //Debug.Log("Getting hit for: " + damage);
         if (!dead) {
             if (curShield > 0) {
                 if (curShield - damage <= 0) {

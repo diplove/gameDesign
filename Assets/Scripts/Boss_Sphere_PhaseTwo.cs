@@ -172,6 +172,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
 
     IEnumerator ActivateTurrets() {
         yield return new WaitForSeconds(2);
+        SpawnCores();
         foreach (GameObject obj in turrets) {
             obj.SendMessage("Spawn");
         }
@@ -179,7 +180,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         yield return new WaitForSeconds(3);
         Controller.GetComponent<Boss_Sphere_MainController>().PhaseTwoLoadComplete();
         yield return new WaitForSeconds(2);
-        SpawnCores();
+
         foreach (GameObject obj in turrets) {
             obj.SendMessage("ToggleVulnerable");
         }

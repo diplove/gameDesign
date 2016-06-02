@@ -38,7 +38,7 @@ public class SunHeatController : MonoBehaviour {
         
         foreach (Transform t in heatedObjects) {
             Vector3 diff = transform.position - t.position;
-            Debug.Log(starMaxHeat / diff.magnitude);
+            //Debug.Log(starMaxHeat / diff.magnitude);
             t.SendMessage("ApplyHeat", (int)(starMaxHeat / diff.magnitude));
         }
     }

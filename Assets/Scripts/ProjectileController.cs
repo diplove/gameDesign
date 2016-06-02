@@ -33,13 +33,23 @@ public class ProjectileController : MonoBehaviour {
         // Instantiate the initial amount of normal projectiles - Object Pooling
         for (int i = 0; i < initialNormalProjectileAmount; i++) {
             GameObject np = Instantiate(normalProjectile);
-            np.SetActive(false);
             normalProjectiles.Add(np);
-            if (gameObject.tag == "enemyShip")
+            switch(gameObject.tag)
             {
-                np.GetComponent<NormalProjectileController>().setDamage(GetComponent<EnemyShipScript>().ShotDamage);
+                case "player":
+                    np.GetComponent<NormalProjectileController>().setDamage(GetComponent<PrototypePlayer>().primDamage);
+                    np.tag = "projectile";
+                    break;
+                case "enemyShip":
+                    np.GetComponent<NormalProjectileController>().setDamage(GetComponent<EnemyShipScript>().ShotDamage);
+                    np.tag = "enemyProjectile";
+                    break;
+                case "enemyTurret":
+                    np.GetComponent<NormalProjectileController>().setDamage(GetComponent<EnemyTurret>().damage);
+                    np.tag = "enemyProjectile";
+                    break;
             }
-
+            np.SetActive(false);
         }	
 	}
 	
@@ -48,12 +58,10 @@ public class ProjectileController : MonoBehaviour {
         foreach (GameObject projectile in normalProjectiles) {
             if (projectile.activeInHierarchy == false) {
                 projectile.SetActive(true);
-                if (gameObject.tag == "player")
+                Debug.Log("Object: " + gameObject + " || Damage: " + projectile.GetComponent<NormalProjectileController>().getDamage());
+                if(gameObject.tag == "player")
                 {
                     projectile.tag = "projectile";
-                } else if (gameObject.tag == "enemyShip")
-                {
-                    projectile.tag = "enemyProjectile";
                 }
                 return projectile;
             }
@@ -61,14 +69,21 @@ public class ProjectileController : MonoBehaviour {
         // If there are no avaliable inactive projectiles, make a new one. - Dynamic
         GameObject np = Instantiate(normalProjectile);
 		normalProjectiles.Add(np);
-		if (gameObject.tag == "enemyShip")
+        switch (gameObject.tag)
         {
-            np.GetComponent<NormalProjectileController>().setDamage(GetComponent<EnemyShipScript>().ShotDamage);
+            case "player":
+                np.GetComponent<NormalProjectileController>().setDamage(GetComponent<PrototypePlayer>().primDamage);
+                np.tag = "projectile";
+                break;
+            case "enemyShip":
+                np.GetComponent<NormalProjectileController>().setDamage(GetComponent<EnemyShipScript>().ShotDamage);
+                np.tag = "enemyProjectile";
+                break;
+            case "enemyTurret":
+                np.GetComponent<NormalProjectileController>().setDamage(GetComponent<EnemyTurret>().damage);
+                np.tag = "enemyProjectile";
+                break;
         }
-		if (gameObject.tag == "enemyTurret")
-		{
-			np.GetComponent<NormalProjectileController>().setDamage(GetComponent<EnemyTurret>().damage);
-		}
 
 
         return np;

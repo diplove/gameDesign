@@ -8,11 +8,12 @@ public class SpaceMineController : MonoBehaviour {
     private List<Transform> targets = new List<Transform>();
     private Vector3 startPos;
 
+    public GameObject physicalMine;
     public GameObject explosionPrefab;
     public Collider2D aggroRadius;
     public Collider2D explodeRadius;
     public float health = 200f;
-    public float speedConstant;
+    public float speedConstant = 4f;
     public float explosionRadius = 10f;
     public float explosionForce = 100f;
     public float damage = 400f;
@@ -48,7 +49,7 @@ public class SpaceMineController : MonoBehaviour {
             }
         }
         rb.velocity = Vector3.zero;
-        GetComponent<Animator>().speed = 1;
+        physicalMine.GetComponent<Animator>().speed = 1;
     }
 
     void Explode() {
@@ -70,7 +71,7 @@ public class SpaceMineController : MonoBehaviour {
         Destroy(gameObject);
     }
 
-    void HitDamage(float damage) {
+    public void HitDamage(float damage) {
         if ((health -= damage) < 0) {
             Explode();
         }
@@ -90,7 +91,7 @@ public class SpaceMineController : MonoBehaviour {
             float speed = diff.magnitude;
 
             rb.AddForce(direction * ( speedConstant / speed));
-            GetComponent<Animator>().speed = 1 * (30 / speed);
+            physicalMine.GetComponent<Animator>().speed = 1 * (30 / speed);
         }
     }
 

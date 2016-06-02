@@ -93,7 +93,7 @@ public class EnemyShipScript : MonoBehaviour
 
         if (health < 200)
         {
-            Debug.Log(health);
+            //Debug.Log(health);
             Debug.Log("I am Dying");
         }
         

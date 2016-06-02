@@ -9,14 +9,14 @@ public class NormalProjectileController : MonoBehaviour {
 	private int countDown;
 	private bool isCounting;
 
-    private float damage;
+    public float damage;
 
     void FixedUpdate() {
 
     }
 
     void Start() {
-        UpdateDamage();
+        //UpdateDamage();
 		countDown = 5;
 		isCounting = false;
     }
