@@ -48,6 +48,7 @@ public class Projectile2Controller : MonoBehaviour {
 		// If there are no avaliable inactive projectiles, make a new one. - Dynamic
 		GameObject np = Instantiate(normalProjectile);
 		normalProjectiles.Add(np);
+		np.GetComponent<NormalProjectileController>().setDamage(GetComponent<PrototypePlayer>().auxDamage);
 		return np;
 	}
 

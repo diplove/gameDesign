@@ -13,6 +13,8 @@ public class ProjectileController : MonoBehaviour {
 
 	public int numWeaponPorts; // Number of weapon ports used
 
+	//public int projectileDamage; // Used by turrets
+
     // Lists of projectiles
     private List<GameObject> normalProjectiles = new List<GameObject>();
     
@@ -58,11 +60,16 @@ public class ProjectileController : MonoBehaviour {
         }
         // If there are no avaliable inactive projectiles, make a new one. - Dynamic
         GameObject np = Instantiate(normalProjectile);
-        normalProjectiles.Add(np);
-        if (gameObject.tag == "enemyShip")
+		normalProjectiles.Add(np);
+		if (gameObject.tag == "enemyShip")
         {
             np.GetComponent<NormalProjectileController>().setDamage(GetComponent<EnemyShipScript>().ShotDamage);
         }
+		if (gameObject.tag == "enemyTurret")
+		{
+			np.GetComponent<NormalProjectileController>().setDamage(GetComponent<EnemyTurret>().damage);
+		}
+
 
         return np;
     }

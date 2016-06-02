@@ -55,9 +55,14 @@ public class LaserController : MonoBehaviour {
             case "enemyShip":
                 target.gameObject.SendMessage("HitDamage", damage);
                 break;
+			case "enemyTurret":
+				target.gameObject.SendMessage("HitDamage", damage);
+				break;
             case "enemyProjectile":
                 target.gameObject.SendMessage("Explode");
                 break;
+			case "ignoreTrigger":
+				break;
             default:
                 //Debug.Log("Laser " + gameObject + " encountered object with no tag handler");
                 break;

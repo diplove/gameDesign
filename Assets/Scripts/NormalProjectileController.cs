@@ -48,6 +48,10 @@ public class NormalProjectileController : MonoBehaviour {
                 other.gameObject.SendMessage("HitDamage", damage);
                 Explode();
                 break;
+			case "enemyTurret":
+				other.gameObject.SendMessage("HitDamage", damage);
+				Explode();
+				break;
             case "enemyProjectile":
                 Explode();
                 break;
