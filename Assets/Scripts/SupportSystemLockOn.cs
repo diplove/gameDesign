@@ -46,18 +46,21 @@ public class SupportSystemLockOn : MonoBehaviour {
         while (i < nearbyObjects.Length)
         {
             Rigidbody2D target = nearbyObjects[i].GetComponent<Rigidbody2D>();
-            if (target && target.name != "Vessel" && target.tag == "asteroid")
+            if (target && target.name != "Vessel")
             {
-                float angle = 35;
-                if (Vector3.Angle(transform.up, target.position - (Vector2)transform.position) < angle)
+                if (target.tag == "asteroid" || target.tag == "enemyShip")
                 {
-                    lockOnMarker.SetActive(true);
-                    lockedOnTarget = target;
-                    lockedOn = true;
-                    vessel.ApplyHeat(50);
+                    float angle = 35;
+                    if (Vector3.Angle(transform.up, target.position - (Vector2)transform.position) < angle)
+                    {
+                        lockOnMarker.SetActive(true);
+                        lockedOnTarget = target;
+                        lockedOn = true;
+                        vessel.ApplyHeat(50);
+                    }
+                    else
+                        lockOnMarker.SetActive(false);
                 }
-                else
-                    lockOnMarker.SetActive(false);
             }
             i++;
         }
@@ -65,11 +68,14 @@ public class SupportSystemLockOn : MonoBehaviour {
 
     void followTarget()
     {
-        Vector3 vectorToTarget = (Vector3)lockedOnTarget.position - transform.position;
-        float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-        Quaternion q = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-        transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * 99);
+        if (lockedOnTarget)
+        {
+            Vector3 vectorToTarget = (Vector3)lockedOnTarget.position - transform.position;
+            float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
+            Quaternion q = Quaternion.AngleAxis(angle - 90, Vector3.forward);
+            transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * 99);
 
-        lockOnMarker.transform.position = lockedOnTarget.position;
+            lockOnMarker.transform.position = lockedOnTarget.position;
+        }
     }
 }
