@@ -11,9 +11,6 @@ public class UIHullText : MonoBehaviour {
     public Text batteryLabel;
 
     public Scrollbar HullBar;
-    public Scrollbar ShieldBar;
-    public Scrollbar HeatBar;
-    public Scrollbar BatteryBar;
 
     private GameObject player; // Variable storing the player GameObject
 
@@ -31,8 +28,6 @@ public class UIHullText : MonoBehaviour {
                             + " | Y: " + player.GetComponent<Rigidbody2D>().velocity.y; // Need to round to two decimal places
 
         HullBar.size = (float)player.GetComponent<PrototypePlayer>().curHull / player.GetComponent<PrototypePlayer>().maxHull;
-        HeatBar.size = (float)player.GetComponent<PrototypePlayer>().curHeat / player.GetComponent<PrototypePlayer>().thresholdHeat;
-        BatteryBar.size = (float)player.GetComponent<PrototypePlayer>().curBatt / player.GetComponent<PrototypePlayer>().maxBatt;
     }
 
 

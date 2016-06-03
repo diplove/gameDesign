@@ -16,12 +16,11 @@ public class UIManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        Time.timeScale = 1;
-        pauseObjects = GameObject.FindGameObjectsWithTag("ShowOnPause");
         GameObject Vessel = GameObject.Find("Vessel");
         Player = (PrototypePlayer)Vessel.GetComponent(typeof(PrototypePlayer));
+        pauseObjects = GameObject.FindGameObjectsWithTag("ShowOnPause");
+        Time.timeScale = 1;
         hidePaused();
-        //Shield = GetComponent<CanvasGroup>();
     }
 	
 	// Update is called once per frame
@@ -30,7 +29,7 @@ public class UIManager : MonoBehaviour {
         UpdateUI();
     }
 
-    void ReadInput() {
+    private void ReadInput() {
         //uses the P or ESC button to pause and unpause the game
         if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Escape)) {
             pauseControl();
@@ -54,14 +53,14 @@ public class UIManager : MonoBehaviour {
     }
 
     //shows objects with ShowOnPause tag
-    public void showPaused() {
+    private void showPaused() {
         foreach (GameObject g in pauseObjects) {
             g.SetActive(true);
         }
     }
 
     //hides objects with ShowOnPause tag
-    public void hidePaused() {
+    private void hidePaused() {
         foreach (GameObject g in pauseObjects) {
             g.SetActive(false);
         }
@@ -77,7 +76,7 @@ public class UIManager : MonoBehaviour {
         SceneManager.LoadScene(level);
     }
 
-    void UpdateUI() {
+    private void UpdateUI() {
         Shield.alpha = (float)player.GetComponent<PrototypePlayer>().curShield / player.GetComponent<PrototypePlayer>().maxShield;
         Heat.alpha = (float)player.GetComponent<PrototypePlayer>().curHeat / player.GetComponent<PrototypePlayer>().thresholdHeat;
         Battery.fillAmount = Mathf.Round((float)player.GetComponent<PrototypePlayer>().curBatt / player.GetComponent<PrototypePlayer>().maxBatt *10)/10f;
