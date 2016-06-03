@@ -54,7 +54,7 @@ public class UIManager : MonoBehaviour {
         //uses the P or ESC or PAUSE button to pause and unpause the game
         if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Pause)) {
             pauseControl();
-        } else if (Input.GetKeyDown(KeyCode.N)) {
+        } else if (Input.GetKeyDown(KeyCode.K) || Input.GetKeyDown(KeyCode.N)) {
             SkipLevel();
         }
     }
@@ -105,7 +105,12 @@ public class UIManager : MonoBehaviour {
     }
 
     private void SkipLevel() {
-        LoadLevel(SceneManager.GetActiveScene().buildIndex + 1);
+        int i = SceneManager.GetActiveScene().buildIndex + 1;
+        if (i > SceneManager.sceneCount) {
+            LoadLevel(i);
+        } else {
+            LoadLevel(0);
+        }
     }
 
     private void UpdateUI() {
