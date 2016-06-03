@@ -20,8 +20,12 @@ public class PrototypePlayer : MonoBehaviour {
 	public int maxShield;
 	public int curShield;
 	public int shieldType;
-    private bool shieldActive;
-    private bool shieldRecharging;
+    //private bool shieldActive;
+    //private bool shieldRecharging;
+	public int shieldRechargeRate;
+
+	private float lastHitTime;
+	public float lastHitTimeMax;
 
     private float lastShieldRechargeStep;
     public float timeBetweenShieldRechargeSteps;
@@ -132,6 +136,7 @@ public class PrototypePlayer : MonoBehaviour {
             HeatUpkeep();
             GeneratorUpkeep();
             SupportUpkeep();
+			ShieldUpkeep();
         }
     }
 
@@ -207,6 +212,10 @@ public class PrototypePlayer : MonoBehaviour {
 				//curBatt -= auxCost;
 				//curHeat += auxHeat;
 				FireAuxiliary();
+			} else {
+				if (hasAux == true) {
+					StopAux();
+				}
 			}
 		}
 
@@ -244,7 +253,7 @@ public class PrototypePlayer : MonoBehaviour {
 
     void GeneratorUpkeep() {
         //Generator Upkeep
-        if (Time.time - lastGeneratorStep > timeBetweenGeneratorSteps) {
+		if (Time.time - lastGeneratorStep > timeBetweenGeneratorSteps) {
             if (curBatt < maxBatt) {
                 if (suppActive == true) {
                     rechargeBuffer = rechargeBuffer + (rechargeRate - suppBattRechargeBlock);
@@ -260,6 +269,20 @@ public class PrototypePlayer : MonoBehaviour {
             lastGeneratorStep = Time.time;
         }
     }
+
+	void ShieldUpkeep() {
+		//Shield Upkeep
+		if (Time.time - lastShieldRechargeStep > timeBetweenShieldRechargeSteps) {
+			if (Time.time - lastHitTime > lastHitTimeMax && curShield < maxShield) {
+				curShield += shieldRechargeRate;
+				if (curShield >= maxShield) {
+					curShield = maxShield;
+
+				}
+			}
+			lastShieldRechargeStep = Time.time;
+		}
+	}
 
     void SupportUpkeep() {
         // Support Upkeep
@@ -331,6 +354,7 @@ public class PrototypePlayer : MonoBehaviour {
     // Method called for dealing damage to vessel
     public void HitDamage(int damage) {
         //Debug.Log("Getting hit for: " + damage);
+		lastHitTime = Time.time;
         if (!dead) {
             if (curShield > 0) {
                 
