@@ -5,19 +5,39 @@ using System.Collections;
 
 public class UIManager : MonoBehaviour {
 
-    GameObject[] pauseObjects;
     GameObject Vessel;
-    PrototypePlayer Player;
-    public CanvasGroup Shield;
-    public CanvasGroup Heat;
-    public GameObject player; // Variable storing the player GameObject
+    PrototypePlayer PlayerCode;
 
-    public Image Battery;
+    Scrollbar HullBar;
+    Text HullLabel;
+    CanvasGroup Shield;
+    Image Battery;
+    Text BatteryLabel;
+    CanvasGroup Heat;
+    CanvasGroup HeatAlarm;
+    Text SpeedLabel;
+
+    GameObject[] pauseObjects;
 
     // Use this for initialization
     void Start () {
-        GameObject Vessel = GameObject.Find("Vessel");
-        Player = (PrototypePlayer)Vessel.GetComponent(typeof(PrototypePlayer));
+        Vessel = GameObject.Find("Vessel");
+        PlayerCode = (PrototypePlayer)Vessel.GetComponent(typeof(PrototypePlayer));
+
+        HullBar = GameObject.Find("HullBar").GetComponent<Scrollbar>();
+        HullLabel = GameObject.Find("HullLabel").GetComponent<Text>();
+
+        Shield = GameObject.Find("StaticShield").GetComponent<CanvasGroup>();
+
+        Battery = GameObject.Find("BatteryBars").GetComponent<Image>();
+        BatteryLabel = GameObject.Find("BatteryLabel").GetComponent<Text>();
+
+        Heat = GameObject.Find("HeatGlow").GetComponent<CanvasGroup>();
+        HeatAlarm = GameObject.Find("HeatAlarm").GetComponent<CanvasGroup>();
+        HeatAlarm.alpha = 0;
+
+        SpeedLabel = GameObject.Find("SpeedLabel").GetComponent<Text>();
+
         pauseObjects = GameObject.FindGameObjectsWithTag("ShowOnPause");
         Time.timeScale = 1;
         hidePaused();
@@ -27,11 +47,12 @@ public class UIManager : MonoBehaviour {
 	void Update () {
         ReadInput();
         UpdateUI();
+        HeatCheck();
     }
 
     private void ReadInput() {
-        //uses the P or ESC button to pause and unpause the game
-        if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Escape)) {
+        //uses the P or ESC or PAUSE button to pause and unpause the game
+        if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Pause)) {
             pauseControl();
         }
     }
@@ -68,7 +89,7 @@ public class UIManager : MonoBehaviour {
 
     public void Respawn() {
         pauseControl();
-        Player.DestroySelf();
+        PlayerCode.DestroySelf();
     }
 
     //loads inputted level
@@ -77,8 +98,24 @@ public class UIManager : MonoBehaviour {
     }
 
     private void UpdateUI() {
-        Shield.alpha = (float)player.GetComponent<PrototypePlayer>().curShield / player.GetComponent<PrototypePlayer>().maxShield;
-        Heat.alpha = (float)player.GetComponent<PrototypePlayer>().curHeat / player.GetComponent<PrototypePlayer>().thresholdHeat;
-        Battery.fillAmount = Mathf.Round((float)player.GetComponent<PrototypePlayer>().curBatt / player.GetComponent<PrototypePlayer>().maxBatt *10)/10f;
+        HullBar.size = Mathf.Round((float)Vessel.GetComponent<PrototypePlayer>().curHull / Vessel.GetComponent<PrototypePlayer>().maxHull * 100) /100f;
+        HullLabel.text = Vessel.GetComponent<PrototypePlayer>().curHull + " / " + Vessel.GetComponent<PrototypePlayer>().maxHull;
+
+        Shield.alpha = (float)Vessel.GetComponent<PrototypePlayer>().curShield / Vessel.GetComponent<PrototypePlayer>().maxShield;
+
+        Battery.fillAmount = Mathf.Round((float)Vessel.GetComponent<PrototypePlayer>().curBatt / Vessel.GetComponent<PrototypePlayer>().maxBatt * 10) / 10f;
+        BatteryLabel.text = Vessel.GetComponent<PrototypePlayer>().curBatt + " / " + Vessel.GetComponent<PrototypePlayer>().maxBatt;
+
+        Heat.alpha = Vessel.GetComponent<PrototypePlayer>().curHeat / Vessel.GetComponent<PrototypePlayer>().thresholdHeat;
+
+        SpeedLabel.text = "Speed: " + Mathf.Round(Vessel.GetComponent<Rigidbody2D>().velocity.magnitude) + " km/s" + " || X: " + Vessel.GetComponent<Rigidbody2D>().velocity.x + " | Y: " + Vessel.GetComponent<Rigidbody2D>().velocity.y; // Need to round to two decimal places
+    }
+
+    private void HeatCheck() {
+        if ((Vessel.GetComponent<PrototypePlayer>().curHeat / Vessel.GetComponent<PrototypePlayer>().thresholdHeat) >= 0.5f) {
+            HeatAlarm.alpha = Mathf.PingPong(Time.time, 1);
+        } else {
+            HeatAlarm.alpha = 0;
+        }
     }
 }
