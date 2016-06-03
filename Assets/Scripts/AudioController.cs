@@ -102,6 +102,12 @@ public class AudioController : MonoBehaviour
     public void playMegaLaser()
     {
         if (!megaLaser.isPlaying)
+        {
+            megaLaser.time = 0.0f;
             megaLaser.Play();
-    }
+        } else if (megaLaser.isPlaying && megaLaser.time > 5.5f)
+        {
+            megaLaser.time = 4.0f;
+        }
+    } 
 }

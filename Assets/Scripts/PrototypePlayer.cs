@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEditor.SceneManagement;
 
 public class PrototypePlayer : MonoBehaviour {
     //Mobility
@@ -159,9 +160,33 @@ public class PrototypePlayer : MonoBehaviour {
         {
             rotation.z -= turnAmount;
         }
+        if (Input.GetKey(KeyCode.Alpha1))
+        {
+            EditorSceneManager.LoadScene(1);
+        }
+        if (Input.GetKey(KeyCode.Alpha2))
+        {
+            EditorSceneManager.LoadScene(2);
+        }
+
+        if (Input.GetKey(KeyCode.Alpha3))
+        {
+            EditorSceneManager.LoadScene(3);
+        }
+
+        if (Input.GetKey(KeyCode.Alpha4))
+        {
+            EditorSceneManager.LoadScene(4);
+        }
+
+        if (Input.GetKey(KeyCode.Alpha5))
+        {
+            EditorSceneManager.LoadScene(5);
+        }
 
 
-		if (Input.GetKey("z")) {
+
+        if (Input.GetKey("z")) {
 			if (curBatt >= primCost) {
 				//curBatt -= primCost;
 				//curHeat += primHeat;

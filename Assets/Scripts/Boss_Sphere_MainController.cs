@@ -86,6 +86,15 @@ public class Boss_Sphere_MainController : MonoBehaviour {
         SphereTwo.SetActive(true);
     }
 
+    public bool IsChangingToPhaseTwo()
+    {
+        if (fullHealth <= phaseTwoHealth)
+        {
+            return true;
+        }
+        return false;
+    }
+
     public void HitDamage(float damage) {
         if (phase == 1) {
             if ((fullHealth -= damage) <= phaseTwoHealth) {
@@ -113,10 +122,9 @@ public class Boss_Sphere_MainController : MonoBehaviour {
     }
 
     IEnumerator SphereDeath() {
-        yield return new WaitForSeconds(2);
         SetCameraToBoss();
         yield return new WaitForSeconds(2);
-        SphereTwo.GetComponent<Boss_Sphere_PhaseTwo>().DestroySelf();
+        StartCoroutine(SphereTwo.GetComponent<Boss_Sphere_PhaseTwo>().DestroySelf());
         while (!battleFinished) {
             yield return new WaitForSeconds(.5f);
         }

@@ -7,8 +7,11 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     private GameObject Controller;
 
     public float health;
+    public GameObject TopSphere;
+    public GameObject BottomSphere;
     public GameObject PhaseTwoCentreExplosionPoints;
     public GameObject PhaseTwoCentreExplosionPrefab;
+    public GameObject PhaseTwoFinalExplosionPrefab;
     public GameObject MegaLaserLeftPoint;
     public GameObject MegaLaserRightPoint;
     public Material MegaLaserMaterial;
@@ -41,6 +44,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     private bool PhaseTwoEventsRunning = false;
     private bool initialSpawning = false;
     private bool normalMode = false;
+    private bool isDying = false;
 
     // Generators
     public GameObject GeneratorOneTop;
@@ -111,8 +115,29 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         OpeningExplosion();
 	}
 
-    public void DestroySelf() {
-        Destroy(gameObject);
+    public IEnumerator DestroySelf() {
+        isDying = true;
+        Vector3[] expPoints = new Vector3[20];
+        for(int i = 0; i < 20; i++)
+        {
+            expPoints[i] = new Vector3(transform.position.x + Random.Range(-6f, 6f), transform.position.y + Random.Range(-6f, 6f), 0);
+        }
+        foreach (Vector3 point in expPoints)
+        {
+            Instantiate(PhaseTwoCentreExplosionPrefab, point, transform.rotation);
+            yield return new WaitForSeconds(0.2f);
+        }
+        yield return new WaitForSeconds(1);
+        Instantiate(PhaseTwoFinalExplosionPrefab, transform.position, transform.rotation);
+        TopSphere.AddComponent<Rigidbody2D>();
+        TopSphere.transform.parent = null;
+        TopSphere.GetComponent<Rigidbody2D>().AddForce(transform.forward * 200);
+        BottomSphere.AddComponent<Rigidbody2D>();
+        BottomSphere.transform.parent = null;
+        BottomSphere.GetComponent<Rigidbody2D>().AddForce(transform.forward * 200);
+        yield return new WaitForSeconds(15);
+        Controller.GetComponent<Boss_Sphere_MainController>().SphereDead();
+        //Destroy(gameObject);
     }
 
     public void GeneratorHit(GameObject obj, float damage) {
@@ -141,7 +166,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         if (!initialSpawnCompleted && !initialSpawning) {
             TriggerStartSequence();
         }
-        if (!PhaseTwoEventsRunning && initialSpawnCompleted) {
+        if (!PhaseTwoEventsRunning && initialSpawnCompleted && !isDying) {
             StartCoroutine(PhaseTwoEvents());
         }
         
@@ -199,7 +224,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     IEnumerator PhaseTwoEvents() {
 
             PhaseTwoEventsRunning = true;
-        if (normalMode == true) {
+        if (normalMode == true && !isDying) {
             rotationAmount = (Random.value <= 0.5f) ? +rotationAmount : -rotationAmount;
             if (!GeneratorOneOnline) {
                 StartCoroutine(LaserChargeRight());
@@ -252,6 +277,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         laserFiringLeft = false;
         leftEm.enabled = false;
         megaLeftlr.enabled = false;
+        ac.megaLaser.Stop();
         GetComponent<Animator>().Play("BossPhaseTwoMegaLaserReverse");
         while (leftSideRotated) {
             yield return new WaitForSeconds(1);
@@ -278,6 +304,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         laserFiringRight = false;
         rightEm.enabled = false;
         megaRightlr.enabled = false;
+        ac.megaLaser.Stop();
         GetComponent<Animator>().Play("BossPhaseTwoMegaLaserReverseR");
         while (rightSideRotated) {
             yield return new WaitForSeconds(1);

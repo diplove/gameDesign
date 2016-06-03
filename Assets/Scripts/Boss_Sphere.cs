@@ -90,7 +90,10 @@ public class Boss_Sphere : MonoBehaviour {
 
     public void TurretDestroyedTest(GameObject obj) {
             Controller.SendMessage("HitDamage", 2000f);
-            RespawnTurret(obj);        
+        if (!Controller.GetComponent<Boss_Sphere_MainController>().IsChangingToPhaseTwo())
+        {
+            RespawnTurret(obj);
+        } 
     }
 
     void RespawnTurret(GameObject obj) {
