@@ -8,6 +8,7 @@ public class PrototypePlayer : MonoBehaviour {
     public float decelerationRate;
     public float turnAmount;
 	public float turnRate;
+	private float overMaxSpeedDecelerationRate;
 
 	//Hull
 	public int maxHull;
@@ -111,6 +112,7 @@ public class PrototypePlayer : MonoBehaviour {
         curShield = maxShield; // Current shield is initialised to the max value
         curBatt = maxBatt;
         curHeat = 0;
+		overMaxSpeedDecelerationRate = 0.30f;
 
         audioObject = GameObject.Find("Audio");
         ac = audioObject.GetComponent<AudioController>();
@@ -414,19 +416,58 @@ public class PrototypePlayer : MonoBehaviour {
 
     void enforceSpeedLimit()
     {
-        if (rb.velocity.y > maxVelocity) {
-            rb.velocity = new Vector2(rb.velocity.x, maxVelocity); 
-        }
-        if (rb.velocity.x > maxVelocity) {
-            rb.velocity = new Vector2(maxVelocity, rb.velocity.y);
-        }
-        if (rb.velocity.y < -maxVelocity) {
-            rb.velocity = new Vector2(rb.velocity.x, -maxVelocity);
-        }
-        if (rb.velocity.x < -maxVelocity) {
-            rb.velocity = new Vector2(rb.velocity.x, -maxVelocity);
-        }
+        //if (rb.velocity.y > maxVelocity) {
+        //    rb.velocity = new Vector2(rb.velocity.x, maxVelocity); 
+        //}
+        //if (rb.velocity.x > maxVelocity) {
+		//	rb.velocity = new Vector2(maxVelocity, rb.velocity.y);
+        //}
+        //if (rb.velocity.y < -maxVelocity) {
+        //    rb.velocity = new Vector2(rb.velocity.x, -maxVelocity);
+        //}
+        //if (rb.velocity.x < -maxVelocity) {
+		//	rb.velocity = new Vector2(-maxVelocity, rb.velocity.y);
+        //}
+
+		if (Mathf.Sqrt(Mathf.Abs(rb.velocity.x*rb.velocity.x + rb.velocity.y*rb.velocity.y)) > Mathf.Sqrt(maxVelocity*maxVelocity)) {
+			if (rb.velocity.x < 0) {
+				rb.velocity = new Vector2(rb.velocity.x + Mathf.Abs(overMaxSpeedDecelerationRate*decelerationRate), rb.velocity.y);
+			} else if (rb.velocity.x > 0) {
+				rb.velocity = new Vector2(rb.velocity.x - Mathf.Abs(overMaxSpeedDecelerationRate*decelerationRate), rb.velocity.y);
+			}
+
+			if (rb.velocity.y < 0) {
+				rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y + Mathf.Abs(overMaxSpeedDecelerationRate*decelerationRate));
+			} else if (rb.velocity.y > 0) {
+				rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y - Mathf.Abs(overMaxSpeedDecelerationRate*decelerationRate));
+			}
+		}
     }
+
+	/* William's code from his Digital Multimedia subject
+	velX = velX + maxAccel*cos(rotationValue);
+    velY = velY + maxAccel*sin(rotationValue);
+	if (sqrt(abs(velX*velX + velY*velY))>sqrt(abs(maxVel*maxVel))) {
+		//reduce both velocity values proportionally
+		float curVelRot;    
+		curVelRot = atan(velY/velX);
+
+
+		if (velX < 0) {
+			velX = velX + abs(maxAccel*cos(curVelRot));
+		}
+		else if (velX > 0) {
+			velX = velX - abs(maxAccel*cos(curVelRot));
+		}
+
+		if (velY < 0) {
+			velY = velY + abs(maxAccel*sin(curVelRot));
+		}
+		else if (velY > 0) {
+			velY = velY - abs(maxAccel*sin(curVelRot));
+		}
+	}
+	*/
 
     void createFixedLock(GameObject other) {
         gameObject.AddComponent<FixedJoint2D>();
