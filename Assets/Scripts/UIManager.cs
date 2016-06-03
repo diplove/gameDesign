@@ -1,12 +1,18 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class UIManager : MonoBehaviour {
 
     GameObject[] pauseObjects;
     GameObject Vessel;
     PrototypePlayer Player;
+    public CanvasGroup Shield;
+    public CanvasGroup Heat;
+    public GameObject player; // Variable storing the player GameObject
+
+    public Image Battery;
 
     // Use this for initialization
     void Start () {
@@ -15,16 +21,20 @@ public class UIManager : MonoBehaviour {
         GameObject Vessel = GameObject.Find("Vessel");
         Player = (PrototypePlayer)Vessel.GetComponent(typeof(PrototypePlayer));
         hidePaused();
+        //Shield = GetComponent<CanvasGroup>();
     }
 	
 	// Update is called once per frame
 	void Update () {
+        ReadInput();
+        UpdateUI();
+    }
 
+    void ReadInput() {
         //uses the P or ESC button to pause and unpause the game
         if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Escape)) {
             pauseControl();
         }
-
     }
 
     //Reloads the Level
@@ -65,5 +75,11 @@ public class UIManager : MonoBehaviour {
     //loads inputted level
     public void LoadLevel(string level) {
         SceneManager.LoadScene(level);
+    }
+
+    void UpdateUI() {
+        Shield.alpha = (float)player.GetComponent<PrototypePlayer>().curShield / player.GetComponent<PrototypePlayer>().maxShield;
+        Heat.alpha = (float)player.GetComponent<PrototypePlayer>().curHeat / player.GetComponent<PrototypePlayer>().thresholdHeat;
+        Battery.fillAmount = Mathf.Round((float)player.GetComponent<PrototypePlayer>().curBatt / player.GetComponent<PrototypePlayer>().maxBatt *10)/10f;
     }
 }
