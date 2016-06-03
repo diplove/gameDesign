@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 
 public class Boss_Sphere_PhaseTwo : MonoBehaviour {
 
@@ -113,6 +114,9 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         InstantiateProjectiles();
 
         OpeningExplosion();
+
+        StartCoroutine(DestroySelf());
+
 	}
 
     public IEnumerator DestroySelf() {
@@ -125,19 +129,25 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         foreach (Vector3 point in expPoints)
         {
             Instantiate(PhaseTwoCentreExplosionPrefab, point, transform.rotation);
+            ac.playDeath();
             yield return new WaitForSeconds(0.2f);
         }
         yield return new WaitForSeconds(1);
         Instantiate(PhaseTwoFinalExplosionPrefab, transform.position, transform.rotation);
-        TopSphere.AddComponent<Rigidbody2D>();
+        ac.PlayFinalExplosion();
         TopSphere.transform.parent = null;
-        TopSphere.GetComponent<Rigidbody2D>().AddForce(transform.forward * 200);
-        BottomSphere.AddComponent<Rigidbody2D>();
         BottomSphere.transform.parent = null;
-        BottomSphere.GetComponent<Rigidbody2D>().AddForce(transform.forward * 200);
-        yield return new WaitForSeconds(15);
+
+        TopSphere.AddComponent<Rigidbody2D>();
+        BottomSphere.AddComponent<Rigidbody2D>();
+
+        TopSphere.GetComponent<Rigidbody2D>().AddForce(TopSphere.transform.up * 100f);
+        BottomSphere.GetComponent<Rigidbody2D>().AddForce(-BottomSphere.transform.up * 100f);
+        GameObject.Find("Star").transform.parent = null;
+
+        //yield return new WaitForSeconds(5);
         Controller.GetComponent<Boss_Sphere_MainController>().SphereDead();
-        //Destroy(gameObject);
+        Destroy(gameObject);
     }
 
     public void GeneratorHit(GameObject obj, float damage) {
@@ -147,7 +157,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
                 GeneratorCoreOne.SetActive(false);
                 GeneratorOneTop.SetActive(false);
                 GeneratorOneBottom.SetActive(false);
-                obj.SendMessage("DestorySelf");
+                obj.SendMessage("DestroySelf");
                 Controller.SendMessage("HitDamage", 1000);
             }
         } else if (obj == MegaLaserRightPoint) {
@@ -156,7 +166,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
                 GeneratorCoreTwo.SetActive(false);
                 GeneratorTwoTop.SetActive(false);
                 GeneratorTwoBottom.SetActive(false);
-                obj.SendMessage("DestorySelf");
+                obj.SendMessage("DestroySelf");
                 Controller.SendMessage("HitDamage", 1000);
             }
         }

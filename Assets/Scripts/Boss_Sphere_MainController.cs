@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEditor.SceneManagement;
 
 public class Boss_Sphere_MainController : MonoBehaviour {
 
@@ -124,11 +125,16 @@ public class Boss_Sphere_MainController : MonoBehaviour {
     IEnumerator SphereDeath() {
         SetCameraToBoss();
         yield return new WaitForSeconds(2);
+        SphereTwo.GetComponent<Boss_Sphere_PhaseTwo>().StopAllCoroutines();
+        SphereTwo.GetComponent<Animator>().Stop();
         StartCoroutine(SphereTwo.GetComponent<Boss_Sphere_PhaseTwo>().DestroySelf());
         while (!battleFinished) {
             yield return new WaitForSeconds(.5f);
         }
         SetCameraToPlayer();
+        yield return new WaitForSeconds(3);
+        EditorSceneManager.LoadScene("MainMenu");
+
     }
 
     // Update is called once per frame

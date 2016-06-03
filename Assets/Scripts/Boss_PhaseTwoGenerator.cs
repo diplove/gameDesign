@@ -9,7 +9,7 @@ public class Boss_PhaseTwoGenerator : MonoBehaviour {
         transform.root.GetComponent<Boss_Sphere_PhaseTwo>().GeneratorHit(gameObject, damage);
     }
 
-    void DestorySelf() {
+    void DestroySelf() {
         Instantiate(generatorExplosion, transform.position, transform.rotation);
         gameObject.SetActive(false);
     }

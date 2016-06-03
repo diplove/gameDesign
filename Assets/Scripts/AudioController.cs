@@ -16,10 +16,15 @@ public class AudioController : MonoBehaviour
     public AudioSource megaLaserCharge;
     public AudioSource turretShoot;
     public AudioSource spacemineExplode;
+    public AudioSource finalExplosion;
 
     void Start()
     {
         turretShoot.volume = 0.2f;
+    }
+
+    public void PlayFinalExplosion() {
+        finalExplosion.Play();
     }
 
 
