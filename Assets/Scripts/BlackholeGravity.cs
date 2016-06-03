@@ -7,6 +7,7 @@ public class BlackholeGravity : MonoBehaviour {
     public float mass;
     public float gravStrength;
 
+    public CircleCollider2D centerCollider;
     [SerializeField]
     private Collider2D gravityWell;
     private List<Transform> blackholeObjects = new List<Transform>();
@@ -29,8 +30,21 @@ public class BlackholeGravity : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.tag == "player" || other.tag == "enemyShip")
+        {
+            if (other.IsTouching(centerCollider))
+            {
+                if (blackholeObjects.Contains(other.transform))
+                {
+                    blackholeObjects.Remove(other.transform);
+                }
+                other.SendMessage("DestroySelf");
+
+            }
+        }
+    
         
-        if (other.tag != "moon" && other.tag != "planet" && other.tag != "playerChild")
+        if (other.tag != "moon" && other.tag != "planet" && other.tag != "playerChild" && other.tag!= "ignoreTrigger")
         {
             if (gravityWell.IsTouching(other))
             {
@@ -41,7 +55,7 @@ public class BlackholeGravity : MonoBehaviour {
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (other.tag != "moon" && other.tag != "planet" && other.tag != "playerChild") 
+        if (other.tag != "moon" && other.tag != "planet" && other.tag != "playerChild" && other.tag != "ignoreTrigger") 
         {
             if (!gravityWell.IsTouching(other))
             {

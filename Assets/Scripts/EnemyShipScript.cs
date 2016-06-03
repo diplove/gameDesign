@@ -65,7 +65,7 @@ public class EnemyShipScript : MonoBehaviour
         dir.z = 0.0f;
 
         //If Player is detected withing range then set follow as true and shoot at the player
-        if (distance < maxSqrDistance)
+        if (distance < maxSqrDistance && !target.GetComponent<PrototypePlayer>().getDeathState())
         {
             follow = true;
             //Shoot at the Player Ship at 1 sec interval
@@ -76,6 +76,9 @@ public class EnemyShipScript : MonoBehaviour
                 shotInterval = ShotInterval;
                 Debug.Log("Shooting at the Player");
             }
+        } else
+        {
+            follow = false;
         }
 
         //If follow is true they never leave the player

@@ -18,10 +18,13 @@ public class SpaceMineController : MonoBehaviour {
     public float explosionForce = 100f;
     public float damage = 400f;
 
+    private AudioController ac;
+
 
     void Start() {
         startPos = transform.position;
         rb = GetComponent<Rigidbody2D>();
+        ac = GameObject.Find("Audio").GetComponent<AudioController>();
     }
 
     void FixedUpdate() {
@@ -68,6 +71,7 @@ public class SpaceMineController : MonoBehaviour {
             }
         }
         Instantiate(explosionPrefab, transform.position, transform.rotation);
+        ac.playSpaceMineExplode();
         Destroy(gameObject);
     }
 
@@ -85,13 +89,17 @@ public class SpaceMineController : MonoBehaviour {
     }
 
     void MoveTowardsTarget() {
-        foreach (Transform t in targets) {
-            Vector3 diff = t.position - transform.position;
-            Vector3 direction = diff.normalized;
-            float speed = diff.magnitude;
+        foreach (Transform t in targets)
+        {
+            if (t.tag == "player" && !t.GetComponent<PrototypePlayer>().getDeathState())
+            {
+                Vector3 diff = t.position - transform.position;
+                Vector3 direction = diff.normalized;
+                float speed = diff.magnitude;
 
-            rb.AddForce(direction * ( speedConstant / speed));
-            physicalMine.GetComponent<Animator>().speed = 1 * (30 / speed);
+                rb.AddForce(direction * (speedConstant / speed));
+                physicalMine.GetComponent<Animator>().speed = 1 * (30 / speed);
+            }
         }
     }
 

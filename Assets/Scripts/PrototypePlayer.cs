@@ -312,6 +312,8 @@ public class PrototypePlayer : MonoBehaviour {
 
     public void DestroySelf() {
         if (!dead) {
+            StopAux();
+            StopPrimary();
             ac.playDeath();
             dead = true;
             Instantiate(deathExplosion, transform.position, transform.rotation);
@@ -381,24 +383,31 @@ public class PrototypePlayer : MonoBehaviour {
     }
 
 	void FirePrimary() {
-		if (Time.time - lastPrimStep > timeBetweenPrimSteps && curBatt >= primCost) {
-			// Test for weapon type (0 = projectile, 1 = laser) and act accordingly
-			curBatt -= primCost;
-			if (primType == 0) {
-				GetComponent<ProjectileController> ().shootNormalProjectile ();
+        if (!dead)
+        {
+            if (Time.time - lastPrimStep > timeBetweenPrimSteps && curBatt >= primCost)
+            {
+                // Test for weapon type (0 = projectile, 1 = laser) and act accordingly
+                curBatt -= primCost;
+                if (primType == 0)
+                {
+                    GetComponent<ProjectileController>().shootNormalProjectile();
 
-                ac.playShootProjectile();
-            } else {
-				GetComponent<LaserController> ().activateLaser ();
+                    ac.playShootProjectile();
+                }
+                else {
+                    GetComponent<LaserController>().activateLaser();
 
-                ac.playShootLaserPulse();
+                    ac.playShootLaserPulse();
 
-            } 
-            ApplyHeat(primHeat);
-            lastPrimStep = Time.time;
-		} else {
-			StopPrimary ();
-		}
+                }
+                ApplyHeat(primHeat);
+                lastPrimStep = Time.time;
+            }
+            else {
+                StopPrimary();
+            }
+        }
 	}
 
 	void StopPrimary() {
@@ -408,24 +417,30 @@ public class PrototypePlayer : MonoBehaviour {
 	}
 
 	void FireAuxiliary() {
-		//curHeat += 10; //Placeholder for the creation of an Auxiliary Weapon Projectile
-		//curBatt -= auxCost;
+        //curHeat += 10; //Placeholder for the creation of an Auxiliary Weapon Projectile
+        //curBatt -= auxCost;
+        if (!dead)
+        {
+            if (Time.time - lastAuxStep > timeBetweenAuxSteps && curBatt >= auxCost)
+            {
+                // Test for weapon type (0 = projectile, 1 = laser) and act accordingly
+                curBatt -= auxCost;
+                if (auxType == 0)
+                {
+                    GetComponent<Projectile2Controller>().shootNormalProjectile();
+                }
+                else {
+                    GetComponent<Laser2Controller>().activateLaser();
+                    ac.playShootLaser();
 
-		if (Time.time - lastAuxStep > timeBetweenAuxSteps && curBatt >= auxCost) {
-			// Test for weapon type (0 = projectile, 1 = laser) and act accordingly
-			curBatt -= auxCost;
-			if (auxType == 0) {
-				GetComponent<Projectile2Controller> ().shootNormalProjectile ();
-			} else {
-				GetComponent<Laser2Controller> ().activateLaser ();
-                ac.playShootLaser();
-                
-            } 
-			ApplyHeat(auxHeat);
-			lastAuxStep = Time.time;
-		} else {
-			StopAux ();
-		}
+                }
+                ApplyHeat(auxHeat);
+                lastAuxStep = Time.time;
+            }
+            else {
+                StopAux();
+            }
+        }
 	}
 
 	void StopAux() {

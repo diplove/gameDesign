@@ -32,7 +32,7 @@ public class SupportSystemInertialDampener : MonoBehaviour
             ac.playInertialDampener();
 
         }
-        Debug.Log(vesselRb.velocity);
+        //Debug.Log(vesselRb.velocity);
 
         if (Input.GetKeyUp(KeyCode.A))
         {

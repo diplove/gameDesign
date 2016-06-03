@@ -23,10 +23,13 @@ public class Boss_Sphere_ProjectileTurret : MonoBehaviour {
     private bool cooldownPeriod = false;
     private float shotCount = 0f;
 
+    private AudioController ac;
+
  
 	void Start () {
         player = GameObject.FindGameObjectWithTag("player").transform;
         StartCoroutine(GetComponentInParent<Boss_Sphere>().ActivateNewTurret(gameObject)); // TESTING
+        ac = GameObject.Find("Audio").GetComponent<AudioController>();
 
     }
 
@@ -82,6 +85,8 @@ public class Boss_Sphere_ProjectileTurret : MonoBehaviour {
             p1.GetComponent<Rigidbody2D>().AddForce(p1.transform.up * projectileSpeed);
             p2.GetComponent<Rigidbody2D>().AddForce(p2.transform.up * projectileSpeed);
             lastStep = Time.time;
+            ac.playTurretShoot();
+
             if (shotCount++ >= maxShotsBeforeCooldown) {
                 cooldownPeriod = true;
                 StartCoroutine(turretCooldown());

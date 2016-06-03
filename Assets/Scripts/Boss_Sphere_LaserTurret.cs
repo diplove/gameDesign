@@ -44,6 +44,9 @@ public class Boss_Sphere_LaserTurret : MonoBehaviour {
                 if (hit.collider.gameObject.tag == "player") {
                     lr.SetPosition(1, hit.point);
                     hit.collider.gameObject.SendMessage("HitDamage", laserDamage);
+                } else if (hit.collider.gameObject.tag == "enemyShip") {
+                    lr.SetPosition(1, hit.point);
+                    hit.collider.gameObject.SendMessage("HitDamage", laserDamage / 2);
                 } else if (hit.collider.gameObject.tag == "projectile" || hit.collider.gameObject.tag == "enemyProjectile") {
                     lr.SetPosition(1, laserStartPoint.transform.position + (transform.up * laserMaxDistance));
                     hit.collider.gameObject.SendMessage("Explode");

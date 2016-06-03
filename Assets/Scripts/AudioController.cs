@@ -13,6 +13,13 @@ public class AudioController : MonoBehaviour
     public AudioSource hullHit;
     public AudioSource laserPulse;
     public AudioSource megaLaser;
+    public AudioSource turretShoot;
+    public AudioSource spacemineExplode;
+
+    void Start()
+    {
+        turretShoot.volume = 0.2f;
+    }
 
 
     public IEnumerator VolumeFade(AudioSource _AudioSource, float _EndVolume, float _FadeLength)
@@ -37,6 +44,11 @@ public class AudioController : MonoBehaviour
             _AudioSource.volume = 100;
         }
 
+    }
+
+    public void playSpaceMineExplode()
+    {
+        spacemineExplode.Play();
     }
 
     public void playLockOn()
@@ -110,4 +122,9 @@ public class AudioController : MonoBehaviour
             megaLaser.time = 4.0f;
         }
     } 
+
+    public void playTurretShoot()
+    {
+        turretShoot.Play();
+    }
 }
