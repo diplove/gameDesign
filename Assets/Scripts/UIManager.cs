@@ -97,6 +97,11 @@ public class UIManager : MonoBehaviour {
         SceneManager.LoadScene(level);
     }
 
+    //loads inputted level
+    public void LoadLevel(int level) {
+        SceneManager.LoadScene(level);
+    }
+
     private void UpdateUI() {
         HullBar.size = Mathf.Round((float)Vessel.GetComponent<PrototypePlayer>().curHull / Vessel.GetComponent<PrototypePlayer>().maxHull * 100) /100f;
         HullLabel.text = Vessel.GetComponent<PrototypePlayer>().curHull + " / " + Vessel.GetComponent<PrototypePlayer>().maxHull;
