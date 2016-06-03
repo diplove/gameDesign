@@ -84,12 +84,12 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     void Start () {
 
         megaLeftlr = MegaLaserLeftPoint.AddComponent<LineRenderer>();
-        megaLeftlr.SetWidth(8, 8);
+        megaLeftlr.SetWidth(10, 10);
         megaLeftlr.material = MegaLaserMaterial;
         megaLeftlr.enabled = false;
 
         megaRightlr = MegaLaserRightPoint.AddComponent<LineRenderer>();
-        megaRightlr.SetWidth(8, 8);
+        megaRightlr.SetWidth(10, 10);
         megaRightlr.material = MegaLaserMaterial;
         megaRightlr.enabled = false;
 
@@ -262,6 +262,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
         }
 
     IEnumerator LaserChargeLeft() {
+        ac.playMegaLaserCharge();
         GeneratorOne.enabled = false;
         GetComponent<Animator>().Play("BossPhaseTwoMegaLaser");
         leftEm.enabled = true;
@@ -288,6 +289,7 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
     }
 
     IEnumerator LaserChargeRight() {
+        ac.playMegaLaserCharge();
         GeneratorTwo.enabled = false;
         GetComponent<Animator>().Play("BossPhaseTwoMegaLaserR");
         rightEm.enabled = true;

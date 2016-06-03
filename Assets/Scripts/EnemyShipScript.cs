@@ -24,6 +24,15 @@ public class EnemyShipScript : MonoBehaviour
     private float maxSqrDistance = 300; //Max Distance between the player and EnemyShip, i.e 75 meters
     private bool follow;
 
+    private float distanceToKeepFromPlayer;
+
+    private AudioController ac;
+
+    public float maxShotsBeforeCooldown = 10f;
+    public float cooldownTime = 3f;
+    private bool cooldownPeriod = false;
+    private float shotCount = 0f;
+
     //Enemy Dead effects
     public GameObject DeathExplosion;
 
@@ -35,6 +44,9 @@ public class EnemyShipScript : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
+        ac = GameObject.Find("Audio").GetComponent<AudioController>();
+        distanceToKeepFromPlayer = 40;
+
         if (health == 0)
         {
             health = defaultHealth;
@@ -70,11 +82,15 @@ public class EnemyShipScript : MonoBehaviour
             follow = true;
             //Shoot at the Player Ship at 1 sec interval
             shotInterval -= Time.deltaTime;
-            if (shotInterval < 0)
+            if (shotInterval < 0 && !cooldownPeriod)
             {
                 Shoot();
                 shotInterval = ShotInterval;
-                Debug.Log("Shooting at the Player");
+                if (shotCount++ >= maxShotsBeforeCooldown) {
+                    cooldownPeriod = true;
+                    StartCoroutine(shootCooldown());
+                }
+                //Debug.Log("Shooting at the Player");
             }
         } else
         {
@@ -90,16 +106,24 @@ public class EnemyShipScript : MonoBehaviour
                 myTransform.rotation = Quaternion.Slerp(myTransform.rotation, Quaternion.FromToRotation(Vector3.up, dir), rotationSpeed * Time.deltaTime);
 
                 //Move Towards Player Ship
-                myTransform.position += (target.position - myTransform.position).normalized * moveSpeed * Time.deltaTime;
+                if (distance > distanceToKeepFromPlayer) {
+                    myTransform.position += (target.position - myTransform.position).normalized * moveSpeed * Time.deltaTime;
+                }
             }
         }
 
         if (health < 200)
         {
             //Debug.Log(health);
-            Debug.Log("I am Dying");
+            //Debug.Log("I am Dying");
         }
         
+    }
+
+    IEnumerator shootCooldown() {
+        yield return new WaitForSeconds(cooldownTime);
+        cooldownPeriod = false;
+        shotCount = 0;
     }
 
     void Push()
@@ -115,8 +139,8 @@ public class EnemyShipScript : MonoBehaviour
 
     void Shoot()
     {
-
-        GetComponent<ProjectileController>().shootNormalProjectile();
+            GetComponent<ProjectileController>().shootNormalProjectile();
+            ac.playShootProjectile();       
 
     }
 
@@ -151,6 +175,7 @@ public class EnemyShipScript : MonoBehaviour
     void DestroySelf()
     {
             Instantiate(DeathExplosion, transform.position, transform.rotation);
+        ac.playDeath();
             GetComponent<Rigidbody2D>().isKinematic = true;
             GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
             GetComponent<SpriteRenderer>().enabled = false;

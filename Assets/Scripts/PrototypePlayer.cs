@@ -3,6 +3,10 @@ using System.Collections;
 using UnityEditor.SceneManagement;
 
 public class PrototypePlayer : MonoBehaviour {
+    // Shield Scaling
+    public Vector2 shieldSize;
+
+
     //Mobility
 	public float maxVelocity;
     public float accelerationRate;
@@ -112,6 +116,8 @@ public class PrototypePlayer : MonoBehaviour {
     void Start () {
 	rb = GetComponent<Rigidbody2D>();
         rotation = transform.rotation.eulerAngles;
+
+        shield.transform.localScale = shieldSize;
 
         curHull = maxHull; // Current is set to max at start
         curShield = maxShield; // Current shield is initialised to the max value
@@ -275,6 +281,9 @@ public class PrototypePlayer : MonoBehaviour {
 		if (Time.time - lastShieldRechargeStep > timeBetweenShieldRechargeSteps) {
 			if (Time.time - lastHitTime > lastHitTimeMax && curShield < maxShield) {
 				curShield += shieldRechargeRate;
+                if (curShield > 0) {
+                    shield.GetComponent<ShieldController>().activateShield();
+                }
 				if (curShield >= maxShield) {
 					curShield = maxShield;
 
@@ -362,6 +371,7 @@ public class PrototypePlayer : MonoBehaviour {
                     int diff = damage - curShield;
                     curShield = 0;
                     curHull -= diff;
+                    shield.GetComponent<ShieldController>().deactivateShield();
                 } else {
                     curShield -= damage;
                 }

@@ -13,6 +13,7 @@ public class AudioController : MonoBehaviour
     public AudioSource hullHit;
     public AudioSource laserPulse;
     public AudioSource megaLaser;
+    public AudioSource megaLaserCharge;
     public AudioSource turretShoot;
     public AudioSource spacemineExplode;
 
@@ -122,6 +123,11 @@ public class AudioController : MonoBehaviour
             megaLaser.time = 4.0f;
         }
     } 
+
+    public void playMegaLaserCharge() {
+        megaLaserCharge.time = 3.5f;
+        megaLaserCharge.Play();
+    }
 
     public void playTurretShoot()
     {
