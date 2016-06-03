@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 public class Boss_Sphere_MainController : MonoBehaviour {
 
@@ -133,7 +133,7 @@ public class Boss_Sphere_MainController : MonoBehaviour {
         }
         SetCameraToPlayer();
         yield return new WaitForSeconds(3);
-        EditorSceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("MainMenu");
 
     }
 

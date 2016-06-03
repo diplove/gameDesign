@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 public class PrototypePlayer : MonoBehaviour {
     // Shield Scaling
@@ -175,26 +175,26 @@ public class PrototypePlayer : MonoBehaviour {
         }
         if (Input.GetKey(KeyCode.Alpha1))
         {
-            EditorSceneManager.LoadScene(1);
+            SceneManager.LoadScene(1);
         }
         if (Input.GetKey(KeyCode.Alpha2))
         {
-            EditorSceneManager.LoadScene(2);
+            SceneManager.LoadScene(2);
         }
 
         if (Input.GetKey(KeyCode.Alpha3))
         {
-            EditorSceneManager.LoadScene(3);
+            SceneManager.LoadScene(3);
         }
 
         if (Input.GetKey(KeyCode.Alpha4))
         {
-            EditorSceneManager.LoadScene(4);
+            SceneManager.LoadScene(4);
         }
 
         if (Input.GetKey(KeyCode.Alpha5))
         {
-            EditorSceneManager.LoadScene(5);
+            SceneManager.LoadScene(5);
         }
 
 
