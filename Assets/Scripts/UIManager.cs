@@ -105,9 +105,9 @@ public class UIManager : MonoBehaviour {
     }
 
     private void SkipLevel() {
-        int i = SceneManager.GetActiveScene().buildIndex + 1;
-        if (i > SceneManager.sceneCount) {
-            LoadLevel(i);
+        int i = SceneManager.GetActiveScene().buildIndex;
+        if (i < SceneManager.sceneCountInBuildSettings - 1) {
+            LoadLevel(i + 1);
         } else {
             LoadLevel(0);
         }
