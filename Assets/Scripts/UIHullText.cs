@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class UIHullText : MonoBehaviour {
+    /*
 
 	public Text hullLabel; // A serialized field where you put in the object in the inspector. In this case, it is a UIText object.
     public Text speedLabel;
@@ -10,7 +11,7 @@ public class UIHullText : MonoBehaviour {
     public Text heatLabel;
     public Text batteryLabel;
 
-    public Scrollbar HullBar;
+    //public Scrollbar HullBar;
 
     private GameObject player; // Variable storing the player GameObject
 
@@ -27,15 +28,15 @@ public class UIHullText : MonoBehaviour {
         speedLabel.text = "Speed: " + Mathf.Round(player.GetComponent<Rigidbody2D>().velocity.magnitude) + " km/s" + " || X: " + player.GetComponent<Rigidbody2D>().velocity.x
                             + " | Y: " + player.GetComponent<Rigidbody2D>().velocity.y; // Need to round to two decimal places
 
-        HullBar.size = (float)player.GetComponent<PrototypePlayer>().curHull / player.GetComponent<PrototypePlayer>().maxHull;
+        //HullBar.size = (float)player.GetComponent<PrototypePlayer>().curHull / player.GetComponent<PrototypePlayer>().maxHull;
     }
 
-
+    /*
     public void Damage(int value) {
         player.GetComponent<PrototypePlayer>().curHull -= value;
     }
-
+    /*
     public void Discharge(int value) {
         player.GetComponent<PrototypePlayer>().curBatt -= value;
-    }
+    }*/
 }
