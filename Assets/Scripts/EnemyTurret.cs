@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class EnemyTurret : MonoBehaviour {
+	public bool isObjective = false;
 
 	public Collider2D hitBox;
 	//public GameObject shootPoint;
@@ -40,6 +41,9 @@ public class EnemyTurret : MonoBehaviour {
 	void DestroySelf() {
 		Instantiate(turretExplosion, transform.position, transform.rotation);
 		Destroy(gameObject);
+		if (isObjective == true) {
+			GameObject.Find ("ObjectiveSystem").GetComponent<LevelEndScript>().IncrementTargetsDestroyed();
+		}
 	}
 
 	void FireTurret() {
