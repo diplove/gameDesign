@@ -21,7 +21,7 @@ public class UIManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        Vessel = GameObject.Find("Vessel");
+        Vessel = GameObject.FindGameObjectWithTag("player");
         PlayerCode = (PrototypePlayer)Vessel.GetComponent(typeof(PrototypePlayer));
 
         HullBar = GameObject.Find("HullBar").GetComponent<Scrollbar>();
