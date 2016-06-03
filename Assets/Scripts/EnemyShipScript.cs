@@ -3,7 +3,9 @@ using System.Collections;
 
 public class EnemyShipScript : MonoBehaviour
 {
-    public float MinForce = 20f;
+	public bool isObjective = false;
+
+	public float MinForce = 20f;
     public float MaxForce = 40f;
     public float DirectionChangeInterval = 1f;
     public float ShotInterval = 1f;
@@ -179,6 +181,10 @@ public class EnemyShipScript : MonoBehaviour
             GetComponent<Rigidbody2D>().isKinematic = true;
             GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
             GetComponent<SpriteRenderer>().enabled = false;
+		if (isObjective == true) {
+			GameObject.Find ("ObjectiveSystem").GetComponent<LevelEndScript>().IncrementTargetsDestroyed();
+		}
+
             Destroy(gameObject);
     }
 }
