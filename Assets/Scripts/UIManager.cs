@@ -22,7 +22,10 @@ public class UIManager : MonoBehaviour {
     // Use this for initialization
     void Start () {
         Vessel = GameObject.FindGameObjectWithTag("player");
-        PlayerCode = (PrototypePlayer)Vessel.GetComponent(typeof(PrototypePlayer));
+        if (Vessel)
+        {
+            PlayerCode = (PrototypePlayer)Vessel.GetComponent(typeof(PrototypePlayer));
+        }
 
         HullBar = GameObject.Find("HullBar").GetComponent<Scrollbar>();
         HullLabel = GameObject.Find("HullLabel").GetComponent<Text>();
@@ -114,17 +117,20 @@ public class UIManager : MonoBehaviour {
     }
 
     private void UpdateUI() {
-        HullBar.size = Mathf.Round((float)Vessel.GetComponent<PrototypePlayer>().curHull / Vessel.GetComponent<PrototypePlayer>().maxHull * 100) /100f;
-        HullLabel.text = Vessel.GetComponent<PrototypePlayer>().curHull + " / " + Vessel.GetComponent<PrototypePlayer>().maxHull;
+        if (Vessel.GetComponent<PrototypePlayer>())
+        {
+            HullBar.size = Mathf.Round((float)Vessel.GetComponent<PrototypePlayer>().curHull / Vessel.GetComponent<PrototypePlayer>().maxHull * 100) / 100f;
+            HullLabel.text = Vessel.GetComponent<PrototypePlayer>().curHull + " / " + Vessel.GetComponent<PrototypePlayer>().maxHull;
 
-        Shield.alpha = (float)Vessel.GetComponent<PrototypePlayer>().curShield / Vessel.GetComponent<PrototypePlayer>().maxShield;
+            Shield.alpha = (float)Vessel.GetComponent<PrototypePlayer>().curShield / Vessel.GetComponent<PrototypePlayer>().maxShield;
 
-        Battery.fillAmount = Mathf.Round((float)Vessel.GetComponent<PrototypePlayer>().curBatt / Vessel.GetComponent<PrototypePlayer>().maxBatt * 10) / 10f;
-        BatteryLabel.text = Vessel.GetComponent<PrototypePlayer>().curBatt + " / " + Vessel.GetComponent<PrototypePlayer>().maxBatt;
+            Battery.fillAmount = Mathf.Round((float)Vessel.GetComponent<PrototypePlayer>().curBatt / Vessel.GetComponent<PrototypePlayer>().maxBatt * 10) / 10f;
+            BatteryLabel.text = Vessel.GetComponent<PrototypePlayer>().curBatt + " / " + Vessel.GetComponent<PrototypePlayer>().maxBatt;
 
-        Heat.alpha = Vessel.GetComponent<PrototypePlayer>().curHeat / Vessel.GetComponent<PrototypePlayer>().thresholdHeat;
+            Heat.alpha = Vessel.GetComponent<PrototypePlayer>().curHeat / Vessel.GetComponent<PrototypePlayer>().thresholdHeat;
 
-        SpeedLabel.text = "Speed: " + Mathf.Round(Vessel.GetComponent<Rigidbody2D>().velocity.magnitude) + " km/s" + " || X: " + Vessel.GetComponent<Rigidbody2D>().velocity.x + " | Y: " + Vessel.GetComponent<Rigidbody2D>().velocity.y; // Need to round to two decimal places
+            SpeedLabel.text = "Speed: " + Mathf.Round(Vessel.GetComponent<Rigidbody2D>().velocity.magnitude) + " km/s" + " || X: " + Vessel.GetComponent<Rigidbody2D>().velocity.x + " | Y: " + Vessel.GetComponent<Rigidbody2D>().velocity.y; // Need to round to two decimal places
+        }
     }
 
     private void HeatCheck() {

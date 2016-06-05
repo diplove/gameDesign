@@ -98,11 +98,11 @@ public class Boss_Sphere_MainController : MonoBehaviour {
 
     public void HitDamage(float damage) {
         if (phase == 1) {
-            if ((fullHealth -= damage) <= phaseTwoHealth) {
+            if ((phaseOneHealth -= damage) <= phaseTwoHealth) {
                 StartCoroutine(PhaseChangeToTwo());
             }
         } else if (phase == 2) {
-            if ((fullHealth -= damage) <= 0) {
+            if ((phaseTwoHealth -= damage) <= 0) {
                 StartCoroutine(SphereDeath());
             }
         }

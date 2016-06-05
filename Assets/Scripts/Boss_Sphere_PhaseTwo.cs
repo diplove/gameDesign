@@ -115,8 +115,6 @@ public class Boss_Sphere_PhaseTwo : MonoBehaviour {
 
         OpeningExplosion();
 
-        StartCoroutine(DestroySelf());
-
 	}
 
     public IEnumerator DestroySelf() {

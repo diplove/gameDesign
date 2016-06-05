@@ -24,7 +24,10 @@ public class OrbitalPlatformController : MonoBehaviour {
                 }
 
             } else if (playerRb.velocity.magnitude > 1.5) {
-                other.gameObject.SendMessage("HitDamage", (playerRb.velocity.sqrMagnitude * playerRb.mass) * rb.mass);
+                if (rb)
+                {
+                    other.gameObject.SendMessage("HitDamage", (playerRb.velocity.sqrMagnitude * playerRb.mass) * rb.mass);
+                }
             }
         }
 

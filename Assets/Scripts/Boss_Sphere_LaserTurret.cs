@@ -58,9 +58,14 @@ public class Boss_Sphere_LaserTurret : MonoBehaviour {
     }
 
     void hasSpawned() {
+
         isSpawned = true;
-        if (GetComponentInParent<Boss_Sphere>().PhaseOneLoaded()) {
-            ToggleVulnerable();
+        if (GetComponentInParent<Boss_Sphere>())
+        {
+            if (GetComponentInParent<Boss_Sphere>().PhaseOneLoaded())
+            {
+                ToggleVulnerable();
+            }
         }
     }
 

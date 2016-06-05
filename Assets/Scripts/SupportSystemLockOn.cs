@@ -54,7 +54,7 @@ public class SupportSystemLockOn : MonoBehaviour {
             Rigidbody2D target = nearbyObjects[i].GetComponent<Rigidbody2D>();
             if (target && target.name != "Vessel")
             {
-                if (target.tag == "asteroid" || target.tag == "enemyShip")
+                if (target.tag == "asteroid" || target.tag == "enemyShip" || target.tag == "enemyTurret" || target.tag == "boss")
                 {
                     float angle = 35;
                     if (Vector3.Angle(transform.up, target.position - (Vector2)transform.position) < angle)

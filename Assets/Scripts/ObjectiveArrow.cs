@@ -4,9 +4,15 @@ using System.Collections;
 public class ObjectiveArrow : MonoBehaviour {
 
     public Transform target;
+    public GameObject objectiveArrow;
     //public Camera camera;
 
-    void Update() {
+        void Start()
+        {
+        objectiveArrow = GameObject.Find("ObjectiveSystem");
+        }
+
+        void Update() {
         LookAtTarget();
         /*
         float dist = Vector3.Distance(target.position, transform.position);
@@ -25,8 +31,11 @@ public class ObjectiveArrow : MonoBehaviour {
     }
 
     void LookAtTarget() {
-        Vector3 relative = transform.InverseTransformPoint(target.position);
-        float angle = Mathf.Atan2(relative.y, relative.x);
-        transform.Rotate(0, 0, angle);
+        if (target)
+        {
+            Vector3 relative = transform.InverseTransformPoint(target.position);
+            float angle = Mathf.Atan2(relative.y, relative.x);
+            transform.Rotate(0, 0, angle);
+        }
     }
 }
