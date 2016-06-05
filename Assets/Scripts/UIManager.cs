@@ -116,8 +116,13 @@ public class UIManager : MonoBehaviour {
         }
     }
 
+    public void Quit()
+    {
+        Application.Quit();
+    }
+
     private void UpdateUI() {
-        if (Vessel.GetComponent<PrototypePlayer>())
+        if (Vessel)
         {
             HullBar.size = Mathf.Round((float)Vessel.GetComponent<PrototypePlayer>().curHull / Vessel.GetComponent<PrototypePlayer>().maxHull * 100) / 100f;
             HullLabel.text = Vessel.GetComponent<PrototypePlayer>().curHull + " / " + Vessel.GetComponent<PrototypePlayer>().maxHull;
