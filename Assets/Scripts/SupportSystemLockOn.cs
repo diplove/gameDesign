@@ -29,9 +29,7 @@ public class SupportSystemLockOn : MonoBehaviour {
 
         if (Input.GetKeyDown("a") && !lockedOn)
         {
-            lockOnMarker.SetActive(true);
-            Scan();
-            
+            Scan(); 
         }
         else if (Input.GetKeyDown("a") && lockedOn)
         {
@@ -65,8 +63,6 @@ public class SupportSystemLockOn : MonoBehaviour {
                         vessel.ApplyHeat(50);
 
                         ac.playLockOn();
-
-
                     }
                     else
                         lockOnMarker.SetActive(false);
@@ -86,6 +82,9 @@ public class SupportSystemLockOn : MonoBehaviour {
             transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * 99);
 
             lockOnMarker.transform.position = lockedOnTarget.position;
+        } else
+        {
+            lockOnMarker.SetActive(false);
         }
     }
 }
