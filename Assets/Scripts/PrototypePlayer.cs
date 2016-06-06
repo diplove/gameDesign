@@ -149,6 +149,11 @@ public class PrototypePlayer : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+
+        if (curHull <= 0 && !dead)
+        {
+            DestroySelf();
+        }
         //Controls
         if (Input.GetKey(KeyCode.UpArrow))
         {           
@@ -344,6 +349,7 @@ public class PrototypePlayer : MonoBehaviour {
 
     public void DestroySelf() {
         if (!dead) {
+            curShield = 0;
             StopAux();
             StopPrimary();
             ac.playDeath();

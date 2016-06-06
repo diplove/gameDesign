@@ -131,6 +131,7 @@ public class Boss_Sphere_MainController : MonoBehaviour {
         while (!battleFinished) {
             yield return new WaitForSeconds(.5f);
         }
+        yield return new WaitForSeconds(3);
         SetCameraToPlayer();
         yield return new WaitForSeconds(3);
         SceneManager.LoadScene("MainMenu");
